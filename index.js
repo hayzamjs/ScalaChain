@@ -79,6 +79,45 @@ function callback(error, response, body) {
 request(options, callback);
 })
 
+app.get('/tx/:hash', function(req, res) {
+    var headers = {
+        'Content-Type': 'application/json'
+    };
+    
+    var dataString = '{"txs_hashes":["'+req.params.hash+'"]}';
+    
+    var options = {
+        url: 'http://scalanode.com:20189/get_transactions',
+        method: 'POST',
+        headers: headers,
+        body: dataString
+    };
+    
+    function callback(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            var bodyParsed = JSON.parse(body);
+            if(bodyParsed.txs != undefined){
+            var tx_hash = bodyParsed.txs[0].tx_hash;
+            var confirmStatus;
+            if(bodyParsed.txs[0].in_pool == false){
+              confirmStatus = "Confirmed";
+            var block_height = bodyParsed.txs[0].block_height;
+            var block_timestamp = bodyParsed.txs[0].block_timestamp;
+            res.render('tx', {"tx_hash": tx_hash, "confirm_status":confirmStatus, "block_height":block_height,"block_timestamp":block_timestamp});
+ 
+            }
+            else{
+              confirmStatus = "Not confirmed";
+
+              res.render('tx', {"tx_hash": tx_hash, "confirm_status":confirmStatus, "block_height":"Unconfirmed","block_timestamp":"Unconfirmed"});
+
+            }           
+            }
+        }
+    }
+    request(options, callback);
+});
+
 app.get('/gettxs', function(req, res) {
     rpcClient.getTransactionPool().then((result) => {
         if (result.status == "OK" && result.transactions.length > 0) {
