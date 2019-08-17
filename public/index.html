@@ -66,6 +66,15 @@
             color: #fff;
             text-transform: uppercase;
         }
+
+        a {
+            font-size: 12px;
+            color: #fff;
+            /*text-transform: uppercase;*/
+            font-weight: 300;
+            text-align: center;
+            margin-bottom: 15px;
+        }
         
         td {
             padding: 15px;
@@ -177,7 +186,7 @@
 
                 for (var i = 0; i <= data2.result.headers.length - 1; i++) {
                     var y = "<tr><td>" + data2.result.headers[i].height + "</td>" +
-                        "<td>" + truncate8(data2.result.headers[i].hash) + "</td>" +
+                        "<td>" + "<a href='" + "/block/"+ data2.result.headers[i].hash + "'>" + truncate8(data2.result.headers[i].hash) + "</td>" +
                         "<td>" + (data2.result.headers[i].reward / 100) + "</td>" +
                         "<td>" + data2.result.headers[i].difficulty + "</td>" +
                         "<td>" + data2.result.headers[i].num_txes + "</td></tr>";

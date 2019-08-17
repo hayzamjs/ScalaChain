@@ -68,9 +68,9 @@ function callback(error, response, body) {
                 "tx_hashes":txx});
                 }
                 else{
-                    res.render('block', {"block_number": height,"block_hash":block_hash,"cumulative_diff":cumulative_difficulty,"diff":difficulty,
-                    "reward":reward,"version":major_version+"."+minor_version,"nonce":nonce,"timestamp":timestamp,
-                    "tx_hashes":"Empty"});
+                res.render('block', {"block_number": height,"block_hash":block_hash,"cumulative_diff":cumulative_difficulty,"diff":difficulty,
+                "reward":reward,"version":major_version+"."+minor_version,"nonce":nonce,"timestamp":timestamp,
+                "tx_hashes":"Empty"});
                 }
             }
         }
