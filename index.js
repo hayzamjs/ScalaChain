@@ -1,18 +1,82 @@
 const rpcClientClass = require('monero-rpc-client');
-const NODE_ADDRESS = 'http://127.0.0.1:20189';
+const NODE_ADDRESS = 'http://scalanode.com:20189';
 const rpcClient = new rpcClientClass(NODE_ADDRESS);
 const express = require('express');
 const app = express();
 const port = 6969;
 const btoa = require("btoa");
-var request = require('request');
+const request = require('request');
 
+const mustacheExpress = require('mustache-express');
+
+app.engine('html', mustacheExpress());
+app.set('view engine', 'html');
+app.set('views', __dirname + '/mustache_templates');
 app.use(express.static('public'))
+
 
 app.get('/getinfo', function(req, res) {
     rpcClient.getInfo().then((result) => {
         res.send(result);
     }).catch((err) => {});
+})
+
+// Get by a single block call was a complete cluster fuck hence the custom call.
+app.get('/block/:hash', function(req, res) {
+var dataString;
+var headers = {
+        'Content-Type': 'application/json'
+};
+    //not a number
+    if(isNaN(req.params.hash)){
+    dataString = '{"jsonrpc":"2.0","id":"0","method":"get_block","params":{"hash":"'+req.params.hash+'"}}';
+    }
+    else{
+    dataString = '{"jsonrpc":"2.0","id":"0","method":"get_block","params":{"height":"'+req.params.hash+'"}}';
+    }
+var options = {
+        url: 'http://scalanode.com:20189/json_rpc',
+        method: 'POST',
+        headers: headers,
+        body: dataString
+};
+    
+function callback(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            var bodyParsed = JSON.parse(body);
+            if(bodyParsed.result == undefined){
+                res.send("INVALID!");
+            }
+            else{
+                var txx = [];
+                var block_hash = bodyParsed.result.block_header.hash; // Hash of the block
+                var difficulty =  bodyParsed.result.block_header.difficulty; // difficulty of the block
+                var cumulative_difficulty =  bodyParsed.result.block_header.cumulative_difficulty; //Cumulative difficulty upto the block.
+                var height = bodyParsed.result.block_header.height; //height of the block
+                var major_version = bodyParsed.result.block_header.major_version; //minor version of the block
+                var minor_version = bodyParsed.result.block_header.minor_version; //major version of the block
+                var nonce = bodyParsed.result.block_header.nonce; //nonce of the block
+                var reward = bodyParsed.result.block_header.reward; //total reward of this block
+                var timestamp = bodyParsed.result.block_header.timestamp; //timestamp of when the block was found
+                if(bodyParsed.result.tx_hashes){
+                for(var i = 0; i<= bodyParsed.result.tx_hashes.length - 1; i++){
+                   txx.push(bodyParsed.result.tx_hashes[i]);
+                }
+                //console.log(JSON.stringify(txx));
+                res.render('block', {"block_number": height,"block_hash":block_hash,"cumulative_diff":cumulative_difficulty,"diff":difficulty,
+                "reward":reward,"version":major_version+"."+minor_version,"nonce":nonce,"timestamp":timestamp,
+                "tx_hashes":txx});
+                }
+                else{
+                    res.render('block', {"block_number": height,"block_hash":block_hash,"cumulative_diff":cumulative_difficulty,"diff":difficulty,
+                    "reward":reward,"version":major_version+"."+minor_version,"nonce":nonce,"timestamp":timestamp,
+                    "tx_hashes":"Empty"});
+                }
+            }
+        }
+}
+    
+request(options, callback);
 })
 
 app.get('/gettxs', function(req, res) {
