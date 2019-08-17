@@ -1,5 +1,5 @@
 const rpcClientClass = require('monero-rpc-client');
-const NODE_ADDRESS = 'http://scalanode.com:20189';
+const NODE_ADDRESS = 'http://127.0.0.1:20189';
 const rpcClient = new rpcClientClass(NODE_ADDRESS);
 const express = require('express');
 const app = express();
@@ -35,7 +35,7 @@ var headers = {
     dataString = '{"jsonrpc":"2.0","id":"0","method":"get_block","params":{"height":"'+req.params.hash+'"}}';
     }
 var options = {
-        url: 'http://scalanode.com:20189/json_rpc',
+        url: 'http://127.0.0.1:20189/json_rpc',
         method: 'POST',
         headers: headers,
         body: dataString
@@ -87,7 +87,7 @@ app.get('/tx/:hash', function(req, res) {
     var dataString = '{"txs_hashes":["'+req.params.hash+'"]}';
     
     var options = {
-        url: 'http://scalanode.com:20189/get_transactions',
+        url: 'http://127.0.0.1:20189/get_transactions',
         method: 'POST',
         headers: headers,
         body: dataString
@@ -146,7 +146,7 @@ app.get('/getBlocks', function(req, res) {
         };
         var dataString = '{"jsonrpc":"2.0","id":"0","method":"get_block_headers_range","params":{"start_height":' + countStart + ',"end_height":' + countEnd + '}}';
         var options = {
-            url: 'http://scalanode.com:20189/json_rpc',
+            url: 'http://127.0.0.1:20189/json_rpc',
             method: 'POST',
             headers: headers,
             body: dataString
