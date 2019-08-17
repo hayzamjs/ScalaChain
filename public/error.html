@@ -176,8 +176,7 @@
 <script>
 function onclicker(){
     var data = document.getElementById("chain_data").value;
-    var dataGood = escape(data)
-    if(isNaN(dataGood)){
+    if(isNaN(data)){
         window.location.href = "/check/"+data;
     }
     else{
@@ -213,62 +212,9 @@ function onclicker(){
                 }
             });
 
-            $.get("/getBlocks", function(data) {
-                var topi = [];
-                var data2 = JSON.parse(data);
-
-                for (var i = 0; i <= data2.result.headers.length - 1; i++) {
-                    var y = "<tr><td>" + "<a href='" + "/block/"+ data2.result.headers[i].height + "'>" + data2.result.headers[i].height + "</td>" +
-                        "<td>" + "<a href='" + "/block/"+ data2.result.headers[i].hash + "'>" + truncate8(data2.result.headers[i].hash) + "</td>" +
-                        "<td>" + (data2.result.headers[i].reward / 100) + "</td>" +
-                        "<td>" + data2.result.headers[i].difficulty + "</td>" +
-                        "<td>" + data2.result.headers[i].num_txes + "</td></tr>";
-                    topi.push(y);
-                }
-                var finale = topi.reverse().join();
-                $("#txBody2").append(finale);
-            });
         </script>
-        <h1>Transaction Pool</h1>
-        <div class="tbl-header">
-            <table cellpadding="0" cellspacing="0" border="0">
-                <thead>
-                    <tr>
-                        <th>Hash</th>
-                        <th>Fee</th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
 
-        <div class="tbl-content">
-            <table cellpadding="0" cellspacing="0" border="0">
-                <tbody id="txBody">
-                </tbody>
-            </table>
-        </div>
-
-        <div class="tbl-header">
-            <table cellpadding="0" cellspacing="0" border="0">
-                <thead>
-                    <tr>
-                        <th>Block</th>
-                        <th>Hash</th>
-                        <th>Reward</th>
-                        <th>Difficulty</th>
-                        <th>Transactions</th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
-
-        <div class="tbl-content">
-            <table cellpadding="0" cellspacing="0" border="0">
-                <tbody id="txBody2">
-                </tbody>
-            </table>
-        </div>
-    </section>
+        <h1>Something went wrong!</h1>
 
     <div class="made-with-love">
         Made with

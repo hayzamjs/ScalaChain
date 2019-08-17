@@ -21,6 +21,44 @@ app.get('/getinfo', function(req, res) {
     }).catch((err) => {});
 })
 
+app.get('/check/:hash', function(req, res) {
+    var pp = req.params.hash;
+    var letterNumber = /^[0-9a-zA-Z]+$/;
+
+    if(pp.length != 64 && !(pp.match(letterNumber))){
+        res.redirect("/error.html");
+    }
+
+    else{
+    var headers = {
+        'Content-Type': 'application/json'
+    };
+    
+    var dataString = '{"jsonrpc":"2.0","id":"0","method":"get_block","params":{"hash":"' + pp +'"}}';
+    
+    var options = {
+        url: 'http://127.0.0.1:20189/json_rpc',
+        method: 'POST',
+        headers: headers,
+        body: dataString
+    };
+    
+    function callback(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            var bodyParsed = JSON.parse(body);
+            if(bodyParsed.result == undefined){
+            res.redirect("/tx/"+pp);
+            }
+            else{
+                res.redirect("/block/"+pp);
+            }
+        }
+    }
+    
+    request(options, callback);
+}
+})
+
 // Get by a single block call was a complete cluster fuck hence the custom call.
 app.get('/block/:hash', function(req, res) {
 var dataString;
