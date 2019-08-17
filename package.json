@@ -1,0 +1,22 @@
+{
+  "name": "scala_chain",
+  "version": "0.0.1",
+  "description": "A simple explorer for Scala Network",
+  "main": "index.js",
+  "scripts": {
+    "test": "start"
+  },
+  "keywords": [
+    "explorer",
+    "scala",
+    "crypto"
+  ],
+  "author": "Scala",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "btoa": "^1.2.1",
+    "express": "^4.17.1",
+    "monero-rpc-client": "0.0.2",
+    "request": "^2.88.0"
+  }
+}
