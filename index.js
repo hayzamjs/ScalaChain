@@ -1,6 +1,6 @@
 const rpcClientClass = require('monero-rpc-client');
-const NODE_ADDRESS = 'http://127.0.0.1:20189';
-const rpcClient = new rpcClientClass(NODE_ADDRESS);
+var nodeaddr = require('./nodeaddress');
+const rpcClient = new rpcClientClass(nodeaddr.NODE_ADDRESS);
 const express = require('express');
 const app = express();
 const port = 6969;
@@ -37,7 +37,7 @@ app.get('/check/:hash', function(req, res) {
     var dataString = '{"jsonrpc":"2.0","id":"0","method":"get_block","params":{"hash":"' + pp +'"}}';
     
     var options = {
-        url: 'http://127.0.0.1:20189/json_rpc',
+        url: nodeaddr.NODE_ADDRESS+'/json_rpc',
         method: 'POST',
         headers: headers,
         body: dataString
@@ -73,7 +73,7 @@ var headers = {
     dataString = '{"jsonrpc":"2.0","id":"0","method":"get_block","params":{"height":"'+req.params.hash+'"}}';
     }
 var options = {
-        url: 'http://127.0.0.1:20189/json_rpc',
+        url: nodeaddr.NODE_ADDRESS+'/json_rpc',
         method: 'POST',
         headers: headers,
         body: dataString
@@ -94,7 +94,7 @@ function callback(error, response, body) {
                 var major_version = bodyParsed.result.block_header.major_version; //minor version of the block
                 var minor_version = bodyParsed.result.block_header.minor_version; //major version of the block
                 var nonce = bodyParsed.result.block_header.nonce; //nonce of the block
-                var reward = bodyParsed.result.block_header.reward; //total reward of this block
+                var reward = bodyParsed.result.block_header.reward/100; //total reward of this block
                 var timestamp = bodyParsed.result.block_header.timestamp; //timestamp of when the block was found
                 if(bodyParsed.result.tx_hashes){
                 for(var i = 0; i<= bodyParsed.result.tx_hashes.length - 1; i++){
@@ -125,7 +125,7 @@ app.get('/tx/:hash', function(req, res) {
     var dataString = '{"txs_hashes":["'+req.params.hash+'"]}';
     
     var options = {
-        url: 'http://127.0.0.1:20189/get_transactions',
+        url: nodeaddr.NODE_ADDRESS+'/get_transactions',
         method: 'POST',
         headers: headers,
         body: dataString
@@ -184,7 +184,7 @@ app.get('/getBlocks', function(req, res) {
         };
         var dataString = '{"jsonrpc":"2.0","id":"0","method":"get_block_headers_range","params":{"start_height":' + countStart + ',"end_height":' + countEnd + '}}';
         var options = {
-            url: 'http://127.0.0.1:20189/json_rpc',
+            url: nodeaddr.NODE_ADDRESS+'/json_rpc',
             method: 'POST',
             headers: headers,
             body: dataString
