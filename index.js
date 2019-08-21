@@ -134,6 +134,9 @@ app.get('/tx/:hash', function(req, res) {
     function callback(error, response, body) {
         if (!error && response.statusCode == 200) {
             var bodyParsed = JSON.parse(body);
+            if(bodyParsed.missed_tx){
+            res.send("Transaction not found!");
+            }
             if(bodyParsed.txs != undefined){
             var tx_hash = bodyParsed.txs[0].tx_hash;
             var confirmStatus;
@@ -142,11 +145,9 @@ app.get('/tx/:hash', function(req, res) {
             var block_height = bodyParsed.txs[0].block_height;
             var block_timestamp = bodyParsed.txs[0].block_timestamp;
             res.render('tx', {"tx_hash": tx_hash, "confirm_status":confirmStatus, "block_height":block_height,"block_timestamp":block_timestamp});
- 
             }
             else{
               confirmStatus = "Not confirmed";
-
               res.render('tx', {"tx_hash": tx_hash, "confirm_status":confirmStatus, "block_height":"Unconfirmed","block_timestamp":"Unconfirmed"});
 
             }           
