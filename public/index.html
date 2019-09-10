@@ -213,16 +213,39 @@ function onclicker(){
                 }
             });
 
+            function fancyTimeFormat(time)
+            {   
+            // Hours, minutes and seconds
+            var hrs = ~~(time / 3600);
+            var mins = ~~((time % 3600) / 60);
+            var secs = ~~time % 60;
+
+            // Output like "1:01" or "4:03:59" or "123:03:59"
+            var ret = "";
+
+            if (hrs > 0) {
+            ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
+            }
+
+            ret += "" + mins + ":" + (secs < 10 ? "0" : "");
+            ret += "" + secs;
+            return ret;
+            }
+
             $.get("/getBlocks", function(data) {
                 var topi = [];
                 var data2 = JSON.parse(data);
 
                 for (var i = 0; i <= data2.result.headers.length - 1; i++) {
-                    var y = "<tr><td>" + "<a href='" + "/block/"+ data2.result.headers[i].height + "'>" + data2.result.headers[i].height + "</td>" +
+                    var timeNow = new Date().getTime()/1000;
+                    var blocksTime = timeNow - data2.result.headers[i].timestamp;
+
+                    var y = "<tr><td>"+fancyTimeFormat(blocksTime)+"</td><td>" + "<a href='" + "/block/"+ data2.result.headers[i].height + "'>" + data2.result.headers[i].height + "</td>" +
                         "<td>" + "<a href='" + "/block/"+ data2.result.headers[i].hash + "'>" + truncate8(data2.result.headers[i].hash) + "</td>" +
                         "<td>" + (data2.result.headers[i].reward / 100) + "</td>" +
                         "<td>" + data2.result.headers[i].difficulty + "</td>" +
                         "<td>" + data2.result.headers[i].num_txes + "</td></tr>";
+
                     topi.push(y);
                 }
                 var finale = topi.reverse().join();
@@ -252,6 +275,7 @@ function onclicker(){
             <table cellpadding="0" cellspacing="0" border="0">
                 <thead>
                     <tr>
+                        <th>Time Found(mm:ss)</th>
                         <th>Block</th>
                         <th>Hash</th>
                         <th>Reward</th>
