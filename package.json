@@ -1,6 +1,6 @@
 {
   "name": "scala_chain",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A simple explorer for Scala Network",
   "main": "index.js",
   "scripts": {
@@ -16,9 +16,9 @@
   "dependencies": {
     "btoa": "^1.2.1",
     "express": "^4.17.1",
+    "javascript-time-ago": "^2.0.7",
     "monero-rpc-client": "0.0.2",
-    "mustache": "^3.0.1",
-    "mustache-express": "^1.2.8",
-    "request": "^2.88.0"
+    "mustache-express": "^1.3.0",
+    "requests": "^0.3.0"
   }
 }

@@ -3,202 +3,289 @@ var nodeaddr = require('./nodeaddress');
 const rpcClient = new rpcClientClass(nodeaddr.NODE_ADDRESS);
 const express = require('express');
 const app = express();
-const port = 6969;
+const port = 1932;
 const btoa = require("btoa");
 const request = require('request');
-
 const mustacheExpress = require('mustache-express');
+
+/* I have no idea where I got this from */
+function fancyTimeFormat(time)
+{   
+var hrs = ~~(time / 3600);
+var mins = ~~((time % 3600) / 60);
+var secs = ~~time % 60;
+var ret = "";
+if (hrs > 0) {
+ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
+}
+ret += "" + mins + ":" + (secs < 10 ? "0" : "");
+ret += "" + secs;
+return ret;
+}
 
 app.engine('html', mustacheExpress());
 app.set('view engine', 'html');
-app.set('views', __dirname + '/mustache_templates');
-app.use(express.static('public'))
+app.set('views', __dirname + '/public');
+app.use(express.static('public'));
 
+app.get('/', function(req, res) {
+rpcClient.getInfo().then((result_info) => {
+    rpcClient.getTransactionPool().then((result_transactions) => {
+    var last_block = result_info.result.height - 1;
+    var tx_length;
 
-app.get('/getinfo', function(req, res) {
-    rpcClient.getInfo().then((result) => {
-        res.send(result);
-    }).catch((err) => {});
-})
-
-app.get('/check/:hash', function(req, res) {
-    var pp = req.params.hash;
-    var letterNumber = /^[0-9a-zA-Z]+$/;
-
-    if(pp.length != 64 && !(pp.match(letterNumber))){
-        res.redirect("/error.html");
+    if(!result_transactions.transactions){
+        tx_length = 0;
+        //console.log("TX Pool empty!")
+    }else{
+        tx_length = result_transactions.transactions.length;
+        //console.log("TX Pool NOT empty!")
     }
 
-    else{
-    var headers = {
-        'Content-Type': 'application/json'
-    };
-    
-    var dataString = '{"jsonrpc":"2.0","id":"0","method":"get_block","params":{"hash":"' + pp +'"}}';
-    
-    var options = {
-        url: nodeaddr.NODE_ADDRESS+'/json_rpc',
-        method: 'POST',
-        headers: headers,
-        body: dataString
-    };
-    
-    function callback(error, response, body) {
-        if (!error && response.statusCode == 200) {
-            var bodyParsed = JSON.parse(body);
-            if(bodyParsed.result == undefined){
-            res.redirect("/tx/"+pp);
-            }
-            else{
-                res.redirect("/block/"+pp);
-            }
+    //console.log(result_info.result.height);
+    request.post({
+        headers: {'content-type' : 'application/json'},
+        url:     "http://xlanode.com:20189/json_rpc",
+        json:    {"jsonrpc":"2.0","id":"0","method":"get_block","params":{"height":	last_block}}
+      }, function(error1, response1, body_getblock){
+        request.post({
+            headers: {'content-type' : 'application/json'},
+            url:     "http://xlanode.com:20189/json_rpc",
+            json:    {"jsonrpc":"2.0","id":"0","method":"get_block_headers_range","params":{"start_height":last_block - 5,"end_height": last_block - 1}}
+          }, function(error2, response2, body_range){
+        //console.log((body_range.result.headers).reverse());
+        //console.log(body_range.result.headers[0]);
+
+        if(error1){console.log(error1)}
+        if(error2){console.log(error1)}
+        var str_hash = body_getblock.result.block_header.hash;
+        var res_tophash = str_hash.substring(0, 5) + "..." + str_hash.substr(str_hash.length - 5);
+        var timeNow = new Date().getTime()/1000;
+        var blocksTime = timeNow - body_getblock.result.block_header.timestamp;
+
+        var last_blocks_tx_array = body_getblock.result.tx_hashes;
+        var last_blocks_txs_html;
+        var prev_blocks_array = (body_range.result.headers).reverse(); //Reversed for correct chronology.
+        var prev_blocks_html = "<tbody id='txBody2'>";
+        if(prev_blocks_array){
+        for(var j = 0; j < prev_blocks_array.length; j++){
+            var time_of_prev_block = (timeNow - prev_blocks_array[j].timestamp);
+            time_of_prev_block = fancyTimeFormat(time_of_prev_block);
+            var prev_block_hash = prev_blocks_array[j].hash;
+            var res_prev_hash = prev_block_hash.substring(0, 5) + "..." + prev_block_hash.substr(prev_block_hash.length - 5);
+            prev_blocks_html += "<tr><td><a href='/go?data="+prev_block_hash+"'>"
+            + res_prev_hash + "</a></td><td>" 
+            + prev_blocks_array[j].height + "</td>" 
+            + "<td>" + (prev_blocks_array[j].reward / 100) + "</td><td>" 
+            + prev_blocks_array[j].difficulty + "</td><td>"
+            + time_of_prev_block + "</td>" +"<td class='t-right'>"+prev_blocks_array[j].num_txes+"</td></tr>";
         }
-    }
-    
-    request(options, callback);
+        prev_blocks_html += "</tbody>"
+      }
+        //More than the cancer I have..I know..LOLZZ
+        if(last_blocks_tx_array){
+            last_blocks_txs_html = "<thead><tr><th>Transaction hash</th><th class='t-right'>Status</th></tr></thead><tbody>"; 
+            var last_blocks_tx_array_length = last_blocks_tx_array.length;
+            for (var i = 0; i < last_blocks_tx_array_length; i++) {
+                last_blocks_txs_html += "<tr><td>" + last_blocks_tx_array[i] + "</td>" + "<td class='t-right c-green'><i class='fas fa-check no-margin'></i></td></tr>";
+            }
+            last_blocks_txs_html += "</tbody>"
+        }else{
+            last_blocks_txs_html = "<thead><tr><th>No Transactions in the last block!</th></tr></thead>"; 
+        }
+                res.render("explorer",{
+                    "block_height":result_info.result.height, 
+                    "difficulty_current":result_info.result.difficulty, 
+                    "hashrate_current":(((result_info.result.difficulty / 300) / 1000000).toFixed(2)) + " MH/s",
+                    "transaction_count":result_info.result.tx_count,
+                    "pool_tx_count":tx_length,
+                    "incoming_conn_count":result_info.result.incoming_connections_count,
+                    "outgoing_conn_count":result_info.result.outgoing_connections_count,
+                    "last_hash_top":res_tophash,
+                    "last_block_height_top":body_getblock.result.block_header.height,
+                    "last_block_reward":(body_getblock.result.block_header.reward / 100),
+                    "last_block_difficulty":body_getblock.result.block_header.difficulty,
+                    "last_block_when": fancyTimeFormat(blocksTime),
+                    "last_block_txs_count":body_getblock.result.block_header.num_txes,
+                    "last_tx_hashes":last_blocks_txs_html,
+                    "prev_blocks_html":prev_blocks_html
+                });
+            });
+        });
+    }).catch((err) => {
+        console.log(err)
+    });
+}).catch((err) => {
+console.log(err)
+});
+});
+
+app.get('/go', function(req, res) {
+var got = req.query.data;
+var letterNumber = /^[0-9a-zA-Z]+$/;
+
+if(got.length != 64 && !(got.match(letterNumber))){
+    res.send("The data you entered was fucked.");
 }
-})
 
-// Get by a single block call was a complete cluster fuck hence the custom call.
-app.get('/block/:hash', function(req, res) {
-var dataString;
-var headers = {
-        'Content-Type': 'application/json'
-};
-    //not a number
-    if(isNaN(req.params.hash)){
-    dataString = '{"jsonrpc":"2.0","id":"0","method":"get_block","params":{"hash":"'+req.params.hash+'"}}';
+request.post({
+    headers: {'content-type' : 'application/json'},
+    url:     "http://xlanode.com:20189/json_rpc",
+    json:    {"jsonrpc":"2.0","id":"0","method":"get_block","params":{"hash": got}}
+  }, function(error1, response1, body_getblock){ 
+    if(body_getblock.result == undefined){
+        res.redirect("/tx?tx_hash="+got);
     }
     else{
-    dataString = '{"jsonrpc":"2.0","id":"0","method":"get_block","params":{"height":"'+req.params.hash+'"}}';
+        res.redirect("/block?block_info="+got);
     }
-var options = {
-        url: nodeaddr.NODE_ADDRESS+'/json_rpc',
-        method: 'POST',
-        headers: headers,
-        body: dataString
-};
-    
-function callback(error, response, body) {
-        if (!error && response.statusCode == 200) {
-            var bodyParsed = JSON.parse(body);
-            if(bodyParsed.result == undefined){
-                res.send("INVALID!");
-            }
-            else{
-                var txx = [];
-                var block_hash = bodyParsed.result.block_header.hash; // Hash of the block
-                var difficulty =  bodyParsed.result.block_header.difficulty; // difficulty of the block
-                var cumulative_difficulty =  bodyParsed.result.block_header.cumulative_difficulty; //Cumulative difficulty upto the block.
-                var height = bodyParsed.result.block_header.height; //height of the block
-                var major_version = bodyParsed.result.block_header.major_version; //minor version of the block
-                var minor_version = bodyParsed.result.block_header.minor_version; //major version of the block
-                var nonce = bodyParsed.result.block_header.nonce; //nonce of the block
-                var reward = bodyParsed.result.block_header.reward/100; //total reward of this block
-                var timestamp = bodyParsed.result.block_header.timestamp; //timestamp of when the block was found
-                if(bodyParsed.result.tx_hashes){
-                for(var i = 0; i<= bodyParsed.result.tx_hashes.length - 1; i++){
-                   txx.push(bodyParsed.result.tx_hashes[i]);
-                }
-                //console.log(JSON.stringify(txx));
-                res.render('block', {"block_number": height,"block_hash":block_hash,"cumulative_diff":cumulative_difficulty,"diff":difficulty,
-                "reward":reward,"version":major_version+"."+minor_version,"nonce":nonce,"timestamp":timestamp,
-                "tx_hashes":txx});
-                }
-                else{
-                res.render('block', {"block_number": height,"block_hash":block_hash,"cumulative_diff":cumulative_difficulty,"diff":difficulty,
-                "reward":reward,"version":major_version+"."+minor_version,"nonce":nonce,"timestamp":timestamp,
-                "tx_hashes":"Empty"});
-                }
-            }
-        }
-}
-    
-request(options, callback);
-})
+    });
+});
 
-app.get('/tx/:hash', function(req, res) {
-    var headers = {
-        'Content-Type': 'application/json'
-    };
-    
-    var dataString = '{"txs_hashes":["'+req.params.hash+'"]}';
-    
-    var options = {
-        url: nodeaddr.NODE_ADDRESS+'/get_transactions',
-        method: 'POST',
-        headers: headers,
-        body: dataString
-    };
-    
-    function callback(error, response, body) {
-        if (!error && response.statusCode == 200) {
-            var bodyParsed = JSON.parse(body);
-            if(bodyParsed.missed_tx){
-            res.send("Transaction not found!");
-            }
-            if(bodyParsed.txs != undefined){
-            var tx_hash = bodyParsed.txs[0].tx_hash;
-            var confirmStatus;
-            if(bodyParsed.txs[0].in_pool == false){
-              confirmStatus = "Confirmed";
-            var block_height = bodyParsed.txs[0].block_height;
-            var block_timestamp = bodyParsed.txs[0].block_timestamp;
-            res.render('tx', {"tx_hash": tx_hash, "confirm_status":confirmStatus, "block_height":block_height,"block_timestamp":block_timestamp});
-            }
-            else{
-              confirmStatus = "Not confirmed";
-              res.render('tx', {"tx_hash": tx_hash, "confirm_status":confirmStatus, "block_height":"Unconfirmed","block_timestamp":"Unconfirmed"});
+app.get('/tx', function(req, res) { 
+    var got = req.query.tx_hash;
+    request.post({
+        headers: {'content-type' : 'application/json'},
+        url:     "http://xlanode.com:20189/get_transactions",
+        json:    {"txs_hashes":[got]}
+      }, function(error1, response1, body_txdata){ 
+         if(body_txdata.missed_tx){
+             res.send("Transaction Not Found!");
+         }
+         if(body_txdata.txs[0].in_pool == true){
+         var html_for_inpool = "<td class='c-black'>"+got+"</td>" + "<td class='t-right'><i class='fas fa-hourglass-half no-margin c-black'></i></td>";
+         rpcClient.getInfo().then((result_info_for_block_stats_page) => {
+            res.render("go_tx", {
+            "html_on_pooltx" : html_for_inpool,
+            "stat_block_height":result_info_for_block_stats_page.result.height,
+            "stat_block_difficulty":result_info_for_block_stats_page.result.difficulty,
+            "stat_block_hashrate":(((result_info_for_block_stats_page.result.difficulty / 300) / 1000000).toFixed(2)) + " MH/s",
+            "stat_txcunt":result_info_for_block_stats_page.result.tx_count,
+            "stat_tx_pool_size":result_info_for_block_stats_page.result.tx_pool_size,
+            "tx_pool_data_size": result_info_for_block_stats_page.result.tx_pool_size * 1.73,
+            "stat_incom": result_info_for_block_stats_page.result.incoming_connections_count,
+            "stat_outgo": result_info_for_block_stats_page.result.outgoing_connections_count
+            });
+            }).catch((err) => {
+                console.log(err)
+            });
+         }
+         if(body_txdata.txs[0].in_pool == false){
+            var html_for_conf = "<td class='c-black'>"+got+"</td>" + "<td class='t-right'><i class='fas fa-check no-margin'></i></td>";
+            rpcClient.getInfo().then((result_info_for_block_stats_page) => {
+                res.render("go_tx", {
+                "html_on_pooltx" : html_for_conf,
+                "stat_block_height":result_info_for_block_stats_page.result.height,
+                "stat_block_difficulty":result_info_for_block_stats_page.result.difficulty,
+                "stat_block_hashrate":(((result_info_for_block_stats_page.result.difficulty / 300) / 1000000).toFixed(2)) + " MH/s",
+                "stat_txcunt":result_info_for_block_stats_page.result.tx_count,
+                "stat_tx_pool_size":result_info_for_block_stats_page.result.tx_pool_size,
+                "tx_pool_data_size": result_info_for_block_stats_page.result.tx_pool_size * 1.73,
+                "stat_incom": result_info_for_block_stats_page.result.incoming_connections_count,
+                "stat_outgo": result_info_for_block_stats_page.result.outgoing_connections_count
+                });
+                }).catch((err) => {
+                    console.log(err)
+                });
+         }
+    });
+});
 
-            }           
+app.get('/block', function(req, res) { 
+    var got = req.query.block_info;
+    if(!isNaN(got)){ // is a fucking number
+        request.post({
+            headers: {'content-type' : 'application/json'},
+            url:     "http://xlanode.com:20189/json_rpc",
+            json:    {"jsonrpc":"2.0","id":"0","method":"get_block","params":{ "height" : got }}
+          }, function(error1, response1, body_getblock){
+            var txsHTML_inblock;
+            txsHTML_inblock = "<tbody>";
+            var blocks_tx_array;
+            if(body_getblock.result){
+                blocks_tx_array = body_getblock.result.tx_hashes;
+            }else{
+                blocks_tx_array = [];
             }
-        }
+            if(blocks_tx_array){
+                for(var k = 0; k < blocks_tx_array.length; k++){
+                txsHTML_inblock += "<tr><td>" + blocks_tx_array[k] + "</td>" + "<td class='t-right c-green'><i class='fas fa-check no-margin'></i></td></tr>";
+                }
+            }else{
+                 txsHTML_inblock += "<tr><td>" + "No transactions in this block!" + "</td></tr>";
+            }
+            txsHTML_inblock += "</tbody>";
+            var timeNow = new Date().getTime()/1000;
+            var blocksTime = timeNow - body_getblock.result.block_header.timestamp;
+            rpcClient.getInfo().then((result_info_for_block_stats_page) => {
+                res.render("go_block", {"block_hash" : body_getblock.result.block_header.hash,
+                "block_height": body_getblock.result.block_header.height,
+                "block_reward": body_getblock.result.block_header.reward / 100,
+                "difficulty": body_getblock.result.block_header.difficulty,
+                "time_ago": fancyTimeFormat(blocksTime),
+                "time_stamp": body_getblock.result.block_header.timestamp,
+                "tx_count":body_getblock.result.block_header.num_txes,
+                "inblock_txs": txsHTML_inblock,
+                "stat_block_height":result_info_for_block_stats_page.result.height,
+                "stat_block_difficulty":result_info_for_block_stats_page.result.difficulty,
+                "stat_block_hashrate":(((result_info_for_block_stats_page.result.difficulty / 300) / 1000000).toFixed(2)) + " MH/s",
+                "stat_txcunt":result_info_for_block_stats_page.result.tx_count,
+                "stat_tx_pool_size":result_info_for_block_stats_page.result.tx_pool_size,
+                "tx_pool_data_size": result_info_for_block_stats_page.result.tx_pool_size * 1.73,
+                "stat_incom": result_info_for_block_stats_page.result.incoming_connections_count,
+                "stat_outgo": result_info_for_block_stats_page.result.outgoing_connections_count
+                });
+                }).catch((err) => {
+                    console.log(err)
+                });
+          });
+    }else{
+        request.post({
+            headers: {'content-type' : 'application/json'},
+            url:     "http://xlanode.com:20189/json_rpc",
+            json:    {"jsonrpc":"2.0","id":"0","method":"get_block","params":{"hash" : got }}
+          }, function(error1, response1, body_getblock){
+            var txsHTML_inblock;
+            txsHTML_inblock = "<tbody>";
+            var blocks_tx_array;
+            if(body_getblock.result){
+                blocks_tx_array = body_getblock.result.tx_hashes;
+            }else{
+                blocks_tx_array = [];
+            }
+            if(blocks_tx_array){
+                for(var k = 0; k < blocks_tx_array.length; k++){
+                txsHTML_inblock += "<tr><td>" + blocks_tx_array[k] + "</td>" + "<td class='t-right c-green'><i class='fas fa-check no-margin'></i></td></tr>";
+                }
+            }else{
+                 txsHTML_inblock += "<tr><td>" + "No transactions in this block!" + "</td></tr>";
+            }
+            txsHTML_inblock += "</tbody>";
+            var timeNow = new Date().getTime()/1000;
+            var blocksTime = timeNow - body_getblock.result.block_header.timestamp;
+            rpcClient.getInfo().then((result_info_for_block_stats_page) => {
+                res.render("go_block", {"block_hash" : body_getblock.result.block_header.hash,
+                "block_height": body_getblock.result.block_header.height,
+                "block_reward": body_getblock.result.block_header.reward / 100,
+                "difficulty": body_getblock.result.block_header.difficulty,
+                "time_ago": fancyTimeFormat(blocksTime),
+                "time_stamp": body_getblock.result.block_header.timestamp,
+                "tx_count":body_getblock.result.block_header.num_txes,
+                "inblock_txs": txsHTML_inblock,
+                "stat_block_height":result_info_for_block_stats_page.result.height,
+                "stat_block_difficulty":result_info_for_block_stats_page.result.difficulty,
+                "stat_block_hashrate":(((result_info_for_block_stats_page.result.difficulty / 300) / 1000000).toFixed(2)) + " MH/s",
+                "stat_txcunt":result_info_for_block_stats_page.result.tx_count,
+                "stat_tx_pool_size":result_info_for_block_stats_page.result.tx_pool_size,
+                "tx_pool_data_size": result_info_for_block_stats_page.result.tx_pool_size * 1.73,
+                "stat_incom": result_info_for_block_stats_page.result.incoming_connections_count,
+                "stat_outgo": result_info_for_block_stats_page.result.outgoing_connections_count
+                });
+                }).catch((err) => {
+                    console.log(err)
+                });
+          });
     }
-    request(options, callback);
 });
 
-app.get('/gettxs', function(req, res) {
-    rpcClient.getTransactionPool().then((result) => {
-        if (result.status == "OK" && result.transactions.length > 0) {
-            var txs = [];
-            for (let i = 0; i <= result.transactions.length - 1; i++) {
-                let fee = result.transactions[i].fee.toString();
-                let id_hash = result.transactions[i].id_hash;
-                let oneTx = fee + "||" + id_hash;
-                let oneTxb64 = btoa(oneTx);
-                txs.push(oneTxb64);
-            }
-            res.send(JSON.stringify(Object.assign({}, txs)));
-        } else {
-            res.send("OK");
-        }
-    }).catch((err) => {});
-});
-
-//Get by range wasn't implemented hence the direct call!
-app.get('/getBlocks', function(req, res) {
-    rpcClient.getBlockCount().then((result) => {
-        var countEnd = result.result.count - 1;
-        var countStart = result.result.count - 11;
-        var headers = {
-            'Content-Type': 'application/json'
-        };
-        var dataString = '{"jsonrpc":"2.0","id":"0","method":"get_block_headers_range","params":{"start_height":' + countStart + ',"end_height":' + countEnd + '}}';
-        var options = {
-            url: nodeaddr.NODE_ADDRESS+'/json_rpc',
-            method: 'POST',
-            headers: headers,
-            body: dataString
-        };
-
-        function callback(error, response, body) {
-            if (!error && response.statusCode == 200) {
-                res.send(body);
-            }
-        }
-        request(options, callback);
-
-    }).catch((err) => {});
-});
-
-app.listen(port, () => console.log(`ScalaChain app listening on port ${port}!`))
+app.listen(port, () => console.log(`ScalaChain app listening on port ${port}!`));
