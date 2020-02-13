@@ -41,3 +41,7 @@ th, td {
 }
 
 hr { background-color: #45515d; }
+
+::placeholder { color: #697185; opacity: 1; }
+:-ms-input-placeholder { color: #697185; }
+::-ms-input-placeholder { color: #697185; }
