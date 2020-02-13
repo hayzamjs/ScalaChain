@@ -1,7 +1,5 @@
 /* Colors */
-.daytime { background: #fafafa; color: #8c8c8c; }
 
-/* Daytime */
 .c-white, h2, h3, h4, h5, button, .button, .button-small, .button-large, footer a, th { color: #fbfaff; }
 .c-grey  { color: #8fa2b6; }
 .c-lighter, tr,input[type="text"], textarea, nav li a.button { color: #cfd3e3; }
