@@ -1,421 +1,224 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="utf-8">
-    <title>Scala - Reinventing the Fundamentals - Private. Mobile. Distributed.</title>
-    <meta name="description" content="">
-    <meta name="author" content="Torque Development Team">
+      <title>Scala - Mobile, distributed and anonymous.</title>
+      <meta name="description" content="Distributed wealth for all devices.">
+      <meta name="author" content="Scala development team">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/colors.css">
-    <link rel="stylesheet" href="css/all.min.css">
-    <style>@import url('https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap');</style>
+      <link rel="stylesheet" href="css/reset.css">
+      <link rel="stylesheet" href="css/styles.css">
+      <link rel="stylesheet" href="css/colors.css">
+      <link href="css/fontawesome.css" rel="stylesheet">
+      <style>@import url('https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap');</style>
 
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+      <script src="js/scroll.js"></script>
+      <script src="js/sorttable.js"></script>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="js/scroll.js"></script>
+      <!-- Twitter -->
+      <meta name="twitter:card" content="summary_large_image"/>
+      <meta name="twitter:site" content="@scalahq"/>
+      <meta name="twitter:title" content="Scala - Mobile, distributed and anonymous."/>
+      <meta name="twitter:description" content="Distributed wealth for all devices."/>
+      <meta name="twitter:image" content="https://scalaproject.io/assets/img/tcard.jpg"/>
 
+      <!-- Favicon -->
+      <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/assets/favicon/site.webmanifest">
+      <link rel="mask-icon" href="/assets/favicon/safari-pinned-tab.svg" color="#238bff">
+      <link rel="shortcut icon" href="/assets/favicon/favicon.ico">
+      <meta name="msapplication-TileColor" content="#ffffff">
+      <meta name="msapplication-config" content="/assets/favicon/browserconfig.xml">
+      <meta name="theme-color" content="#191e26">
 
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image"/>
-    <meta name="twitter:site" content="@scalahq"/>
-    <meta name="twitter:title" content="Scala - Reinventing the Fundamentals - Private. Mobile. Distributed."/>
-    <meta name="twitter:description" content="Scala is an open-source and community-driven cryptocurrency with the mission to advance fundamental blockchain technologies."/>
-    <meta name="twitter:image" content="https://torque.cash/img/card.jpg"/>
+  </head>
+  <body>
 
-    <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="img/favicon/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="img/favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="img/favicon/favicon-16x16.png">
-    <link rel="manifest" href="img/favicon/site.webmanifest">
-    <link rel="mask-icon" href="img/favicon/safari-pinned-tab.svg" color="#ff1468">
-    <link rel="shortcut icon" href="img/favicon/favicon.ico">
-    <meta name="msapplication-TileColor" content="#ff1468">
-    <meta name="msapplication-config" content="img/favicon/browserconfig.xml">
-    <meta name="theme-color" content="#151b29">
-
-    <!-- Copy -->
-    <script>
-      function copy(id) {
-        $(id+"_address").select();
-        document.execCommand("copy");
-        $(id+"_c").text("copied !");
-        $(id+"_b").removeClass("c-grey").addClass("c-green");
-        $(id+"_i").removeClass("fa-copy").addClass("fa-check-circle");
-
-        setTimeout(function(){
-          $(id+"_b").removeClass("c-green").addClass("c-grey");
-          $(id+"_c").text("copy");
-          $(id+"_i").removeClass("fa-check-circle").addClass("fa-copy");
-        }, 750);
-      }
-
-      function tab(tab, a, b) {
-        $("#"+tab+"_"+b).hide();
-        $("#"+tab+"_"+a).show();
-        $("#"+tab+"_"+b).removeClass("active");
-        $("#"+tab+"_"+a+"_b").removeClass("bg-darker c-grey").addClass(" bg-lighter");
-        $("#"+tab+"_"+b+"_b").removeClass("bg-lighter").addClass("bg-darker");
-      }
-   </script>
-</head>
-<body>
-
-  <!-- Navigation Bar -->
-  <div class="frame bg-grey top-fix shadowed">
-    <div class="container">
-      <nav>
-        <div class="row">
-          <div class="fixed-col x1-half">
-            <a  href="/"><img src="img/logo.svg" height="30" width="40" class="left"></a><div class="left nav-header c-white fat">Explorer</div>
+    <!-- Navigation -->
+    <div class="top-fix bg-grey full-width">
+      <div class="container">
+        <nav>
+          <div class="row">
+            <div class="no-lh">
+              <a href="https://explorer.scalaproject.io/"><img src="assets/img/logo.svg" height="32px" class="left"></a><h1 class="h5 c-white fat left spacer-top">Explorer</h1>
+            </div>
           </div>
-          <div class="fixed-col x1-half t-right">
-            <div class="navbox">
-              <a class="button-small c-lighter" id="showsupport"><i class="m-icon fas fa-star no-margin"></i></a>
-              <a class="button-small c-lighter" id="showstats"><i class="m-icon fas fa-chart-bar no-margin"></i></a>
-              <a href="/" class="button-small c-lighter go-home"><i class="m-icon fas fa-chevron-left no-margin"></i></a>
-              <!-- Support -->
-              <div class="boxed bg-grey support t-left small shadowed" style="display: none;">
-                <header>
-                  <div class="row">
-                    <h4 class="h5"><i class="fas fa-star"></i> Donations   <span class="right c-black"> November 2019</span></h4>
-                  </div>
-                </header>
-                <div>
-                  <article>
-                    <header>
-                      <h5><i class="fas fa-trophy"></i> Top</h5>
-                      <hr>
-                    </header>
-                    <ul>
-                      <li>22.15.19 22&#58;21<span class="right c-lighter">0.45 BTC</span></li>
-                      <li>22.15.19 22&#58;21<span class="right c-lighter">0.45 BTC</span></li>
-                      <li>22.15.19 22&#58;21<span class="right c-lighter">0.45 BTC</span></li>
-                    </ul>
-                  </article>
-                </div>
-                <div>
-                  <article>
-                    <header>
-                      <h5><i class="fas fa-history"></i> Recent</h5>
-                      <hr>
-                    </header>
-                    <ul>
-                      <li>22.15.19 22&#58;21<span class="right c-lighter">0.45 BTC</span></li>
-                      <li>22.15.19 22&#58;21<span class="right c-lighter">0.45 BTC</span></li>
-                      <li>22.15.19 22&#58;21<span class="right c-lighter">0.45 BTC</span></li>
-                      <li>22.15.19 22&#58;21<span class="right c-lighter">0.45 BTC</span></li>
-                      <li>22.15.19 22&#58;21<span class="right c-lighter">0.45 BTC</span></li>
-                    </ul>
-                  </article>
-                  <article>
-                    <ul class="c-white">
-                      <li><i class="far fa-calendar"></i><b>Total this month</b><span class="right c-green fat">0.45235 BTC</span></li>
-                    </ul>
-                    <a href="#" class="button small bg-green t-center full-width copy"><i class="fas fa-copy"></i> Copy BTC address</a>
-                  </article>
-                  <article>
-                    <p class="h5 c-grey"><i class="fas fa-info-circle"></i> Donations support the contributors and help them to pay for the infrastructure.</p>
-                  </article>
-                </div>
+        </nav>
+      </div>
+    </div>
 
+    <div class="container">
+      <div class="row">
+        <div class="push-top">
+          <section>
+            <div class="search-bar">
+              <div class="input-field">
+                <input type="text" class="bg-black full-width" id="chain_data" placeholder="Height, Transaction or Block Hash...">
               </div>
-
-              <!-- Statistics -->
-              <div class="boxed bg-grey stats t-left small shadowed" style="display: none;">
-                <header>
-                  <h4 class="h5"><i class="fas fa-chart-bar"></i> Statistics</h4>
-                </header>
-                <div>
-                  <article>
-                    <header>
-                      <h5>Supply</h5>
-                      <hr>
-                    </header>
-                    <ul>
-                      <li>Total<span class="right c-lighter">8,749,829,804 XLA</span></li>
-                      <li>Circulating<span class="right c-lighter">8,623,829,804 XLA</span></li>
-                      <li>Max<span class="right c-lighter">21,000,000,000 XLA</span></li>
-                  </ul>
-                </article>
-                </div>
-                <div>
-                  <article>
-                    <header>
-                      <h5>Network</h5>
-                      <hr>
-                    </header>
-                    <ul>
-                      <li>Hashrate<span class="right c-lighter">1.12 kH/s</span></li>
-                      <li>Difficulty<span class="right c-lighter">252352</span></li>
-                      <li>Block height<span class="right c-lighter">2362361531</span></li>
-                    <li>Transaction count<span class="right c-lighter">235151</span></li>
-                  </ul>
-                </article>
-                </div>
-                <div>
-                  <article>
-                    <header>
-                      <h5>Market</h5>
-                      <hr>
-                    </header>
-                    <ul>
-                      <li>Market Cap<span class="right c-lighter">$284,876 USD</span></li>
-                      <li>Volume (24h)<span class="right c-lighter">$1,365.92 USD</span></li>
-                    </ul>
-                  </article>
-                </div>
-              </div>
-
-              <!-- Naviation -->
-              <div class="boxed bg-grey navigation t-left small shadowed" style="display: none;">
-                <header>
-                  <h4 class="h5"><i class="fas fa-bars"></i> Navigation</h4>
-                </header>
-                <ul>
-                  <li><a href="#privacy" class="button bg-lighter full-width">The blockchain</a></li>
-                  <li><a href="#payments" class="button bg-lighter full-width">Online-Payments</a></li>
-                  <li><a href="#contributors" class="button bg-lighter full-width">Contributors</a></li>
-                  <li><a href="#downloads" class="button bg-lighter full-width">Downloads and links</a></li>
-                </ul>
-                <article>
-                  <header>
-                    <h4 class="h5"><i class="fas fa-bolt"></i> Quick links</h4>
-                  </header>
-                  <ul>
-                    <li><a href="#privacy" class="button bg-lighter full-width">Paper wallet</a></li>
-                    <li><a href="#algorithm" class="button bg-lighter full-width">Blockchain explorer</a></li>
-                    <li><a href="#contributors" class="button bg-lighter full-width">Mining Pools</a></li>
-                  </ul>
-                </article>
-              </section>
+              <div class="input-button">
+                <script>
+                  function goSearch(){
+                  var variable = document.getElementById("chain_data").value;
+                  var alphanumeric_variable = variable.replace(/[^a-z0-9]/gi,'');
+                  if(!isNaN(alphanumeric_variable)){ // is a number so can only be a block if being anything.
+                    location.href = "/block?block_info=" + alphanumeric_variable;
+                  }else{
+                    location.href = "/go?data=" + alphanumeric_variable;
+                  }
+                  }
+                </script>
+                <button class="button bg-blue"><i class="fas fa-search no-margin" onclick="goSearch();"></i></button>
               </div>
             </div>
-
-          </div>
-        </div>
-      </nav>
-    </div>
-  </div>
-
-
-  <div class="container">
-    <div class="row spacer-top">
-      <section>
-        <div class="search-bar">
-          <div class="input-field">
-            <input type="text" class="bg-black full-width" id="chain_data" placeholder="Height, Transaction or Block Hash...">
-          </div>
-          <div class="input-button">
-            <button class="button bg-blue"><i class="fas fa-search no-margin"></i></button>
-          </div>
-        </div>
-      </section>
-    </div>
-
-    <div class="row small">
-      <div class="col">
-        <section>
-          <header>
-            <h4><i class="fas fa-search"></i> Your search result</h4>
-          </header>
-          <article>
-            <table>
-              <thead>
-                <tr>
-                  <th>Transaction hash</th>
-                  <th class="t-right">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  {{{html_on_pooltx}}}
-                </tr>
-              </tbody>
-            </table>
-          </article>
           </section>
         </div>
       </div>
 
-      <div class="row push-top small">
-        <section>
-          <header>
-            <h4><i class="far fa-chart-bar"></i> Network statistics</h4>
-          </header>
-          <div class="col x1-third">
-            <article>
-              <header>
-                <h5>Network</h5>
-                <hr>
-              </header>
-              <ul>
-                <li>Block height&#58;<span class="right c-lighter">{{stat_block_height}}</span></li>
-                <li>Difficulty&#58;<span class="right c-lighter">{{stat_block_difficulty}}</span></li>
-                <li>Hashrate&#58;<span class="right c-lighter">{{stat_block_hashrate}}</span></li>
-              </ul>
-            </article>
-          </div>
-          <div class="col x1-third">
-            <article>
-              <header>
-                <h5>Transactions</h5>
-                <hr>
-              </header>
-              <ul>
-                <li>Count&#58;<span class="right c-lighter">{{stat_txcunt}}</span></li>
-                <li>Pool size&#58;<span class="right c-lighter">{{stat_tx_pool_size}}</span></li>
-                <li>Transaction size&#58;<span class="right c-lighter">{{tx_pool_data_size}} kb</span></li>
-              </ul>
-            </article>
-          </div>
-          <div class="col x1-third">
-            <article>
-              <header>
-                <h5>Connections</h5>
-                <hr>
-              </header>
-              <ul>
-                <li>Incoming connections&#58;<span class="right c-lighter">{{stat_incom}}</span></li>
-                <li>Outgoing connections&#58;<span class="right c-lighter">{{stat_outgo}}</span></li>
-              </ul>
-            </article>
-          </div>
-        </section>
-      </div>
-    </div>
-  </div>
-
-
-
-
-  <!-- Downloads and links -->
-  <footer>
-    <div class="frame bg-black">
-      <div class="container">
-        <div class="row push-top-hard" id="downloads">
-          <h2 class="h5"><i class="fas fa-arrow-down"></i> Downloads & Links</h2>
-          <hr class="col x1-half bg-blue">
-        </div>
-        <div class="row">
-          <div class="col x1-fourth push-top">
-            <section>
-              <header>
-                <h4 class="c-black">Downloads</h4>
-              </header>
-              <ul>
-                <li><a href="#">GUI Wallet</a></li>
-                <li><a href="#">CLI Wallet</a></li>
-                <li><a href="#">CLI Miner</a></li>
-              </ul>
-            </section>
-          </div>
-          <div class="col x1-fourth push-top">
-            <section>
-              <header>
-                <h4 class="c-black">Essentials</h4>
-              </header>
-              <ul>
-                <li><a href="#">Explorer</a></li>
-                <li><a href="#">Mining Pools</a></li>
-                <li><a href="#">Paper Wallet</a></li>
-              </ul>
-            </section>
-          </div>
-          <div class="col x1-fourth push-top">
-            <section>
-              <header>
-                <h4 class="c-black">Plugins</h4>
-              </header>
-              <ul class="c-darkgrey">
-                <li><a href="#">Point of Sales</a></li>
-                <li><a href="#">Wordpress Plugin</a></li>
-                <li><a href="#">Monitoring Tool</a></li>
-              </ul>
-            </section>
-          </div>
-          <div class="col x1-fourth push-top">
-            <section>
-              <header>
-                <h4 class="c-black">Exchanges</h4>
-              </header>
-              <ul>
-                <li><a href="#">Tradeogre BTC</a></li>
-                <li><a href="#">Tradeogre LTC</a></li>
-                <li><a href="#">Stex</a></li>
-              </ul>
-            </section>
-          </div>
-        </div>
-        <div class="row push-bottom push-top">
+      <div class="row small">
+        <div class="col">
           <section>
             <header>
-              <h4 class="c-black fat">Follow us</h4>
+              <h5><i class="fas fa-search"></i> Your search result</h5>
             </header>
-            <a href="https://medium.com/scala-network" target="_blank" class="button small bg-grey mobi-full-width c-white"><i class="fab fa-medium"></i> Medium</a>
-            <a href="https://twitter.com/scalahq" target="_blank" class="button small bg-grey mobi-full-width c-white"><i class="fab fa-twitter"></i> Twitter</a>
-            <a href="https://t.me/scalaNews" target="_blank" class="button small bg-grey mobi-full-width c-white"><i class="fab fa-telegram"></i> Telegram</a>
-            <a href="https://discordapp.com/invite/djAFVvy" target="_blank" class="button small bg-grey mobi-full-width c-white"><i class="fab fa-discord"></i> Discord</a>
-            <a href="https://github.com/scala-network/" target="_blank" class="button small bg-green mobi-full-width right"><i class="fab fa-github"></i> Contribute on GitHub</a>
+            <article>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Transaction hash</th>
+                    <th class="t-right">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    {{{html_on_pooltx}}}
+                  </tr>
+                </tbody>
+              </table>
+            </article>
+            </section>
+          </div>
+        </div>
+
+       <div class="row push-top small push-bottom-hard">
+         <section>
+           <header>
+             <h5><i class="far fa-chart-bar"></i> Network statistics</h5>
+           </header>
+           <div class="col x1-third">
+             <article>
+               <header>
+                 <h6 class="c-white">Network</h6>
+                 <hr>
+               </header>
+               <ul>
+                 <li>Block height&#58;<span class="right c-lighter">{{stat_block_height}}</span></li>
+                 <li>Difficulty&#58;<span class="right c-lighter">{{stat_block_difficulty}}</span></li>
+                 <li>Hashrate&#58;<span class="right c-lighter">{{stat_block_hashrate}}</span></li>
+               </ul>
+             </article>
+           </div>
+           <div class="col x1-third">
+             <article>
+               <header>
+                 <h6 class="c-white">Transactions</h6>
+                 <hr>
+               </header>
+               <ul>
+                 <li>Count&#58;<span class="right c-lighter">{{stat_txcunt}}</span></li>
+                 <li>Pool size&#58;<span class="right c-lighter">{{stat_tx_pool_size}}</span></li>
+                 <li>Transaction size&#58;<span class="right c-lighter">{{tx_pool_data_size}} kb</span></li>
+               </ul>
+             </article>
+           </div>
+           <div class="col x1-third">
+             <article>
+               <header>
+                 <h6 class="c-white">Connections</h6>
+                 <hr>
+               </header>
+               <ul>
+                 <li>Incoming connections&#58;<span class="right c-lighter">{{stat_incom}}</span></li>
+                 <li>Outgoing connections&#58;<span class="right c-lighter">{{stat_outgo}}</span></li>
+               </ul>
+             </article>
+           </div>
+         </section>
+       </div>
+     </div>
+    </div>
+
+
+    <!-- Downloads and links -->
+    <footer class="frame bg-black" id="footer">
+      <div class="container">
+        <div class="row">
+          <div class="col x1-fourth spacer-top">
+            <section>
+              <header>
+                <h5 class="c-black">Downloads</h5>
+              </header>
+              <ul>
+                <li><a href="https://github.com/scala-network/scala-electron-gui/releases" target="_blank">GUI Wallet</a></li>
+                <li><a href="https://github.com/scala-network/Scala/releases" target="_blank">CLI Wallet</a></li>
+                <li><a href="https://github.com/scala-network/XLArig/releases" target="_blank">CLI Miner</a></li>
+              </ul>
+            </section>
+          </div>
+          <div class="col x1-fourth spacer-top">
+            <section>
+              <header>
+                <h5 class="c-black">Essentials</h5>
+              </header>
+              <ul>
+                <li><a href="https://explorer.scalaproject.io/">Explorer</a></li>
+                <li><a href="https://scalaproject.io/paper-wallet.php">Paper Wallet</a></li>
+                <li><a href="https://scalaproject.io/pools.php">Mining Pools</a></li>
+              </ul>
+            </section>
+          </div>
+          <div class="col x1-fourth spacer-top">
+            <section>
+              <header>
+                <h5 class="c-black">Plugins</h5>
+              </header>
+              <ul class="c-darkgrey">
+                <li><a href="https://github.com/scala-network/stellite-card-reader" target="_blank">Point of Sales</a></li>
+                <li><a href="https://github.com/scala-network/ScalaPay-Merchant-NPM" target="_blank">ScalaPay NPM</a></li>
+                <li><a href="https://github.com/scala-network/XTC-Stats" target="_blank">Monitoring Tool</a></li>
+              </ul>
+            </section>
+          </div>
+          <div class="col x1-fourth spacer-top">
+            <section>
+              <header>
+                <h5 class="c-black">Exchanges</h5>
+              </header>
+              <ul>
+                <li><a href="https://tradeogre.com/exchange/BTC-XLA" target="_blank">Tradeogre BTC</a></li>
+                <li><a href="https://tradeogre.com/exchange/LTC-XLA" target="_blank">Tradeogre LTC</a></li>
+                <li><a href="https://app.stex.com/en/trade/pair/BTC/XLA/" target="_blank">Stex</a></li>
+              </ul>
+            </section>
+          </div>
+        </div>
+        <div class="row spacer-top">
+          <section>
+            <header>
+              <h5 class="c-black fat">Join the community</h5>
+            </header>
+            <a href="https://medium.com/scala-network" target="_blank" class="button bg-grey mobi-full-width c-white"><i class="fab fa-medium"></i> Medium</a>
+            <a href="https://twitter.com/scalahq" target="_blank" class="button bg-grey mobi-full-width c-white"><i class="fab fa-twitter"></i> Twitter</a>
+            <a href="https://t.me/scalaNews" target="_blank" class="button bg-grey mobi-full-width c-white"><i class="fab fa-telegram"></i> Telegram</a>
+            <a href="https://discordapp.com/invite/djAFVvy" target="_blank" class="button bg-grey mobi-full-width c-white"><i class="fab fa-discord"></i> Discord</a>
+            <a href="https://github.com/scala-network/" target="_blank" class="button bg-green mobi-full-width right"><i class="fab fa-github"></i> Contribute on GitHub</a>
           </section>
         </div>
       </div>
-    </div>
-  </footer>
-
-
-  <script>
-    $(document).ready(function() {
-        $('#showmenu').click(function() {
-        $('.navigation').slideToggle("fast");
-        });
-    });
-
-    $(document).ready(function() {
-        $('#showstats').click(function() {
-        $('.stats').slideToggle("fast");
-        });
-    });
-
-    $(document).ready(function() {
-        $('#showsupport').click(function() {
-        $('.support').slideToggle("fast");
-        });
-    });
-
-    $('#showmenu').click(function() {
-      $("i", this).toggleClass("fa-bars fa-chevron-down");
-      $(this).toggleClass("c-lighter c-blue");
-    });
-    $('#showsupport').click(function() {
-      $("i", this).toggleClass("fa-star fa-chevron-down");
-      $(this).toggleClass("c-lighter c-blue");
-    });
-    $('#showstats').click(function() {
-      $("i", this).toggleClass("fa-chart-bar fa-chevron-down");
-      $(this).toggleClass("c-lighter c-blue");
-    });
-    $('#showmenu').hover(function() {
-      $(this).toggleClass("c-lighter c-white");
-    });
-    $('#showsupport').hover(function() {
-      $(this).toggleClass("c-lighter c-white");
-    });
-    $('.go-home').hover(function() {
-      $(this).toggleClass("c-lighter c-white");
-    });
-  </script>
-
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-122317293-4"></script>
-
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'UA-122317293-4');
-  </script>
+    </footer>
   </body>
 </html>

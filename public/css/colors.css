@@ -1,11 +1,13 @@
 /* Colors */
+.daytime { background: #fafafa; color: #8c8c8c; }
 
+/* Daytime */
 .c-white, h2, h3, h4, h5, button, .button, .button-small, .button-large, footer a, th { color: #fbfaff; }
 .c-grey  { color: #8fa2b6; }
 .c-lighter, tr,input[type="text"], textarea, nav li a.button { color: #cfd3e3; }
 .c-black { color: #697185; }
 
-.c-blue, h1, a { color: #238bff; }
+.c-blue, a, h1 { color: #238bff; }
 .c-green { color: #2caf6e; }
 .c-red { color: #ff470e; }
 .c-yellow { color: #eddd2c; }
@@ -24,6 +26,7 @@ a.bg-lighter:hover { background-color: #374655; }
 a.bg-grey:hover { background-color: #283241; }
 a.bg-green:hover { background-color: #2daf5f; }
 a.bg-blue:hover { background-color: #2a98ff; }
+a.bg-black:hover { background-color: #2d3746; }
 
 .o-hover { opacity: 0.8;}
 .o-hover:hover { opacity: 1;}

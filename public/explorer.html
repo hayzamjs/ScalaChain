@@ -1,29 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="utf-8">
-    <title>Scala - Blockchain explorer</title>
-    <meta name="description" content="Distributed wealth for all devices">
-    <meta name="author" content="Scala development team">
+      <title>Scala - Mobile, distributed and anonymous.</title>
+      <meta name="description" content="Distributed wealth for all devices.">
+      <meta name="author" content="Scala development team">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/colors.css">
-    <link rel="stylesheet" href="css/all.min.css">
-    <style>@import url('https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap');</style>
+      <link rel="stylesheet" href="css/reset.css">
+      <link rel="stylesheet" href="css/styles.css">
+      <link rel="stylesheet" href="css/colors.css">
+      <link href="css/fontawesome.css" rel="stylesheet">
+      <style>@import url('https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap');</style>
 
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+      <script src="js/scroll.js"></script>
+      <script src="js/sorttable.js"></script>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="js/scroll.js"></script>
-
-
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image"/>
-    <meta name="twitter:site" content="@scalahq"/>
-    <meta name="twitter:title" content="Scala - Blockchain explorer"/>
-    <meta name="twitter:description" content="Distributed wealth for all devices."/>
-    <meta name="twitter:image" content="https://scalaproject.io/assets/img/card.jpg"/>
+      <!-- Twitter -->
+      <meta name="twitter:card" content="summary_large_image"/>
+      <meta name="twitter:site" content="@scalahq"/>
+      <meta name="twitter:title" content="Scala - Mobile, distributed and anonymous."/>
+      <meta name="twitter:description" content="Distributed wealth for all devices."/>
+      <meta name="twitter:image" content="https://scalaproject.io/assets/img/tcard.jpg"/>
 
       <!-- Favicon -->
       <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png">
@@ -34,83 +34,56 @@
       <link rel="shortcut icon" href="/assets/favicon/favicon.ico">
       <meta name="msapplication-TileColor" content="#ffffff">
       <meta name="msapplication-config" content="/assets/favicon/browserconfig.xml">
-      <meta name="theme-color" content="#ffffff">
+      <meta name="theme-color" content="#191e26">
 
-    <!-- Copy -->
-    <script>
-      function copy(id) {
-        $(id+"_address").select();
-        document.execCommand("copy");
-        $(id+"_c").text("copied !");
-        $(id+"_b").removeClass("c-grey").addClass("c-green");
-        $(id+"_i").removeClass("fa-copy").addClass("fa-check-circle");
+  </head>
+  <body>
 
-        setTimeout(function(){
-          $(id+"_b").removeClass("c-green").addClass("c-grey");
-          $(id+"_c").text("copy");
-          $(id+"_i").removeClass("fa-check-circle").addClass("fa-copy");
-        }, 750);
-      }
-
-      function tab(tab, a, b) {
-        $("#"+tab+"_"+b).hide();
-        $("#"+tab+"_"+a).show();
-        $("#"+tab+"_"+b).removeClass("active");
-        $("#"+tab+"_"+a+"_b").removeClass("bg-darker c-grey").addClass(" bg-lighter");
-        $("#"+tab+"_"+b+"_b").removeClass("bg-lighter").addClass("bg-darker");
-      }
-   </script>
-</head>
-<body>
-
-  <!-- Navigation Bar -->
-  <div class="frame bg-grey top-fix shadowed">
-    <div class="container">
-      <nav>
-        <div class="row">
-          <div class="fixed-col x1-half">
-            <a href="/"><img src="img/logo.svg" height="30" width="40" class="left"></a><div class="left nav-header c-white fat">Explorer</div>
-          </div>
-          <div class="fixed-col x1-half t-right">
-            <div class="navbox">
-               <a href="index.php" class="button right small bg-lighter c-lighter"><i class="fas fa-chevron-left"></i> Back</a>
+    <!-- Navigation -->
+    <div class="top-fix bg-grey full-width">
+      <div class="container">
+        <nav>
+          <div class="row">
+            <div class="no-lh">
+              <a href="https://explorer.scalaproject.io/"><img src="assets/img/logo.svg" height="32px" class="left"></a><h1 class="h5 c-white fat left spacer-top">Explorer</h1>
             </div>
           </div>
-        </div>
-      </nav>
-    </div>
-  </div>
-
-  <div class="container">
-    <div class="row spacer-top">
-      <section>
-        <div class="search-bar">
-          <div class="input-field">
-            <input type="text" class="bg-black full-width" id="chain_data" placeholder="Height, Transaction or Block Hash...">
-          </div>
-          <div class="input-button">
-            <script>
-              function goSearch(){
-              var variable = document.getElementById("chain_data").value;
-              var alphanumeric_variable = variable.replace(/[^a-z0-9]/gi,'');
-              if(!isNaN(alphanumeric_variable)){ // is a number so can only be a block if being anything.
-                location.href = "/block?block_info=" + alphanumeric_variable;
-              }else{
-                location.href = "/go?data=" + alphanumeric_variable;
-              }
-              }
-            </script>
-            <button class="button bg-blue"><i class="fas fa-search no-margin" onclick="goSearch();"></i></button>
-          </div>
-        </div>
-      </section>
+        </nav>
+      </div>
     </div>
 
-    <div class="row small">
+    <div class="container">
+      <div class="row">
+        <div class="push-top">
+          <section>
+            <div class="search-bar">
+              <div class="input-field">
+                <input type="text" class="bg-black full-width" id="chain_data" placeholder="Height, Transaction or Block Hash...">
+              </div>
+              <div class="input-button">
+                <script>
+                  function goSearch(){
+                  var variable = document.getElementById("chain_data").value;
+                  var alphanumeric_variable = variable.replace(/[^a-z0-9]/gi,'');
+                  if(!isNaN(alphanumeric_variable)){ // is a number so can only be a block if being anything.
+                    location.href = "/block?block_info=" + alphanumeric_variable;
+                  }else{
+                    location.href = "/go?data=" + alphanumeric_variable;
+                  }
+                  }
+                </script>
+                <button class="button bg-blue"><i class="fas fa-search no-margin" onclick="goSearch();"></i></button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <div class="row small push-bottom-hard">
       <div class="col x2-third">
         <section class="push-bottom">
           <header>
-            <h4><i class="fas fa-hourglass"></i> Current block</h4>
+            <h5><i class="fas fa-hourglass"></i> Current block</h5>
           </header>
           <article>
             <table>
@@ -168,7 +141,7 @@
           <section class="push-bottom">
             <article>
               <header>
-                <h4><i class="fas fa-history"></i> Latest 5 blocks</h4>
+                <h5><i class="fas fa-history"></i> Latest 5 blocks</h5>
               </header>
               <table class="small">
                 <thead>
@@ -190,11 +163,11 @@
       <div class="col x1-third">
         <section>
           <header>
-            <h4><i class="far fa-chart-bar"></i> Network statistics</h4>
+            <h5><i class="far fa-chart-bar"></i> Network statistics</h5>
           </header>
           <article>
             <header>
-              <h5>Network</h5>
+              <h6 class="c-white">Network</h6>
               <hr>
             </header>
             <ul>
@@ -205,7 +178,7 @@
           </article>
           <article>
             <header>
-              <h5>Transactions</h5>
+              <h6 class="c-white">Transactions</h6>
               <hr>
             </header>
             <ul>
@@ -218,7 +191,7 @@
           </article>
           <article>
             <header>
-              <h5>Connections</h5>
+              <h6 class="c-white">Connections</h6>
               <hr>
             </header>
             <ul>
@@ -230,15 +203,13 @@
       </div>
     </div>
   </div>
-
-
-
+    </div>
 
     <!-- Downloads and links -->
     <footer class="frame bg-black" id="footer">
       <div class="container">
         <div class="row">
-          <div class="col x1-fourth push-top">
+          <div class="col x1-fourth spacer-top">
             <section>
               <header>
                 <h5 class="c-black">Downloads</h5>
@@ -250,19 +221,19 @@
               </ul>
             </section>
           </div>
-          <div class="col x1-fourth push-top">
+          <div class="col x1-fourth spacer-top">
             <section>
               <header>
                 <h5 class="c-black">Essentials</h5>
               </header>
               <ul>
                 <li><a href="https://explorer.scalaproject.io/">Explorer</a></li>
-                <li><a href="paper-wallet.php">Paper Wallet</a></li>
-                <li><a href="mining-pools.php">Mining Pools</li>
+                <li><a href="https://scalaproject.io/paper-wallet.php">Paper Wallet</a></li>
+                <li><a href="https://scalaproject.io/pools.php">Mining Pools</a></li>
               </ul>
             </section>
           </div>
-          <div class="col x1-fourth push-top">
+          <div class="col x1-fourth spacer-top">
             <section>
               <header>
                 <h5 class="c-black">Plugins</h5>
@@ -274,7 +245,7 @@
               </ul>
             </section>
           </div>
-          <div class="col x1-fourth push-top">
+          <div class="col x1-fourth spacer-top">
             <section>
               <header>
                 <h5 class="c-black">Exchanges</h5>
@@ -287,10 +258,10 @@
             </section>
           </div>
         </div>
-        <div class="row push-top">
+        <div class="row spacer-top">
           <section>
             <header>
-              <h5 class="c-black fat">Follow us</h5>
+              <h5 class="c-black fat">Join the community</h5>
             </header>
             <a href="https://medium.com/scala-network" target="_blank" class="button bg-grey mobi-full-width c-white"><i class="fab fa-medium"></i> Medium</a>
             <a href="https://twitter.com/scalahq" target="_blank" class="button bg-grey mobi-full-width c-white"><i class="fab fa-twitter"></i> Twitter</a>
@@ -302,56 +273,142 @@
       </div>
     </footer>
 
-  <script>
-    $(document).ready(function() {
-        $('#showmenu').click(function() {
-        $('.navigation').slideToggle("fast");
-        });
-    });
 
-    $(document).ready(function() {
-        $('#showstats').click(function() {
-        $('.stats').slideToggle("fast");
-        });
-    });
 
-    $(document).ready(function() {
-        $('#showsupport').click(function() {
-        $('.support').slideToggle("fast");
-        });
-    });
+    <script>
+      $(document).ready(function() {
+          $('#showmenu').click(function() {
+          $('.navigation').slideToggle("fast");
+          });
+      });
 
-    $('#showmenu').click(function() {
-      $("i", this).toggleClass("fa-bars fa-chevron-down");
-      $(this).toggleClass("c-lighter c-blue");
-    });
-    $('#showsupport').click(function() {
-      $("i", this).toggleClass("fa-star fa-chevron-down");
-      $(this).toggleClass("c-lighter c-blue");
-    });
-    $('#showstats').click(function() {
-      $("i", this).toggleClass("fa-chart-bar fa-chevron-down");
-      $(this).toggleClass("c-lighter c-blue");
-    });
-    $('#showmenu').hover(function() {
-      $(this).toggleClass("c-lighter c-white");
-    });
-    $('#showsupport').hover(function() {
-      $(this).toggleClass("c-lighter c-white");
-    });
-    $('#showstats').hover(function() {
-      $(this).toggleClass("c-lighter c-white");
-    });
-  </script>
+      $(document).ready(function() {
+          $('#showstats').click(function() {
+          $('.stats').slideToggle("fast");
+          });
+      });
 
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-122317293-4"></script>
+      $(document).ready(function() {
+          $('#showsupport').click(function() {
+          $('.support').slideToggle("fast");
+          });
+      });
 
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+      $('#showmenu').click(function() {
+        $("i", this).toggleClass("fa-bars fa-chevron-down");
+        $(this).toggleClass("c-lighter c-blue");
+      });
+      $('#showsupport').click(function() {
+        $("i", this).toggleClass("fa-star fa-chevron-down");
+        $(this).toggleClass("c-lighter c-blue");
+      });
+      $('#showstats').click(function() {
+        $("i", this).toggleClass("fa-chart-bar fa-chevron-down");
+        $(this).toggleClass("c-lighter c-blue");
+      });
+      $('#showmenu').hover(function() {
+        $(this).toggleClass("c-lighter c-white");
+      });
+      $('#showsupport').hover(function() {
+        $(this).toggleClass("c-lighter c-white");
+      });
+      $('#showstats').hover(function() {
+        $(this).toggleClass("c-lighter c-white");
+      });
+    </script>
 
-    gtag('config', 'UA-122317293-4');
-  </script>
+    <script>
+      function abbreviateNumber(value) {
+        var newValue = value;
+        if (value >= 1000) {
+            var suffixes = ["H/s", "kH/s", "mH/s"];
+            var suffixNum = Math.floor( (""+value).length/3 );
+            var shortValue = '';
+            for (var precision = 2; precision >= 1; precision--) {
+                shortValue = parseFloat( (suffixNum != 0 ? (value / Math.pow(1000,suffixNum) ) : value).toPrecision(precision));
+                var dotLessShortValue = (shortValue + '').replace(/[^a-zA-Z 0-9]+/g,'');
+                if (dotLessShortValue.length <= 2) { break; }
+            }
+            if (shortValue % 1 != 0)  shortValue = shortValue.toFixed(1);
+            newValue = shortValue+suffixes[suffixNum];
+        }
+        return newValue;
+      }
+
+      $.getJSON('http://mobile.pool.scalaproject.io/api/stats', function(data) {
+
+        var scalahash = `${data.pool.hashrate}`
+        var scalahashrate = abbreviateNumber(scalahash)
+        var scalaminers = `${data.pool.miners}`
+        var scalafee = `${data.config.fee} &#37;`
+        var scalalastblock = `${data.pool.lastBlockFound}`
+
+        $(".scala-hashrate").html(scalahashrate);
+        $(".scala-miners").html(scalaminers);
+        $(".scala-fee").html(scalafee);
+        $(".scala-lastblock").html(scalalastblock);
+
+      });
+
+      $.getJSON('https://scala.herominers.com/api/stats', function(data) {
+
+        var herohash = `${data.pool.hashrate}`
+        var herohashrate = abbreviateNumber(herohash)
+        var herominers = `${data.pool.miners}`
+        var herofee = `${data.config.fee} &#37;`
+        var herolastblock = `${data.pool.lastBlockFound}`
+
+        $(".hero-hashrate").html(herohashrate);
+        $(".hero-miners").html(herominers);
+        $(".hero-fee").html(herofee);
+        $(".hero-lastblock").html(herolastblock);
+
+      });
+
+      $.getJSON('https://stellite.miner.rocks/api/stats', function(data) {
+
+        var rockhash = `${data.pool.hashrate}`
+        var rockhashrate = abbreviateNumber(rockhash)
+        var rockminers = `${data.pool.miners}`
+        var rockfee = `${data.config.fee} &#37;`
+        var rocklastblock = `${data.pool.lastBlockFound}`
+
+        $(".rock-hashrate").html(rockhashrate);
+        $(".rock-miners").html(rockminers);
+        $(".rock-fee").html(rockfee);
+        $(".rock-lastblock").html(rocklastblock);
+
+      });
+    </script>
+
+    <script>
+      $('.h-link').click(function() {
+        if ($("i", this).is('.fa-chevron-down, .fa-chevron-up')) {
+          $("i", this).toggleClass("fa-chevron-down fa-chevron-up");
+        }
+        else {
+          $('.sort-icon').not(this).each(function(){
+            $('.sort-icon').removeClass("fa-chevron-down");
+            $('.sort-icon').removeClass("fa-chevron-up");
+          });
+          $("i", this).addClass("fa-chevron-down");
+        }
+      });
+    </script>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-122317293-4"></script>
+
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-122317293-4');
+    </script>
+
+    <script>
+
+
+</script>
   </body>
 </html>
