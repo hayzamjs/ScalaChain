@@ -78,10 +78,10 @@ rpcClient.getInfo().then((result_info) => {
       }
         //More than the cancer I have..I know..LOLZZ
         if(last_blocks_tx_array){
-            last_blocks_txs_html = "<thead><tr><th>Transaction hash</th><th>Unlocked in</th><th class='t-right'>Status</th></tr></thead><tbody>";
+            last_blocks_txs_html = "<thead><tr><th>Transaction hash</th><th>Unlock Block</th><th class='t-right'>Status</th></tr></thead><tbody>";
             var last_blocks_tx_array_length = last_blocks_tx_array.length;
             for (var i = 0; i < last_blocks_tx_array_length; i++) {
-                last_blocks_txs_html += "<tr><td>" + last_blocks_tx_array[i] + "</td><td>" + unlock_time + "</td><td class='t-right c-green'><i class='fas fa-check no-margin'></i></td></tr>";
+                last_blocks_txs_html += "<tr><td>" + last_blocks_tx_array[i] + "</td><td>" + (last_block + 10) + "</td><td class='t-right c-green'><i class='fas fa-check no-margin'></i></td></tr>";
             }
             last_blocks_txs_html += "</tbody>"
         }else{
