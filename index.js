@@ -93,6 +93,7 @@ rpcClient.getInfo().then((result_info) => {
                     "hashrate_current":(((result_info.result.difficulty / 300) / 1000000).toFixed(2)) + " MH/s",
                     "transaction_count":result_info.result.tx_count,
                     "pool_tx_count":tx_length,
+                    "tx_pool_data_size": tx_length * 1.73,
                     "incoming_conn_count":result_info.result.incoming_connections_count,
                     "outgoing_conn_count":result_info.result.outgoing_connections_count,
                     "last_hash_top":res_tophash,
@@ -151,8 +152,9 @@ app.get('/tx', function(req, res) {
              res.send("Transaction Not Found!");
          }else{
          if(body_txdata.txs[0].in_pool == true){
-         var html_for_inpool = "<td class='c-black'>"+got+"</td><td>" + (last_block + 10) + "</td><td class='t-right'><i class='fas fa-hourglass-half no-margin c-black'></i></td>";
          rpcClient.getInfo().then((result_info_for_block_stats_page) => {
+            var html_for_inpool = "<td class='c-black'>"+got+"</td><td>" + (result_info_for_block_stats_page.result.height + 10) + "</td><td class='t-right'><i class='fas fa-hourglass-half no-margin c-black'></i></td>";
+
             res.render("go_tx", {
             "html_on_pooltx" : html_for_inpool,
             "stat_block_height":result_info_for_block_stats_page.result.height,
@@ -169,15 +171,16 @@ app.get('/tx', function(req, res) {
             });
          }
          if(body_txdata.txs[0].in_pool == false){
-            var html_for_conf = "<td>"+got+"</td><td>" + (last_block + 10) + "</td><td class='t-right c-green'><i class='fas fa-check no-margin'></i></td>";
             rpcClient.getInfo().then((result_info_for_block_stats_page) => {
+                var html_for_conf = "<td>"+got+"</td><td>" + (result_info_for_block_stats_page.result.height + 10) + "</td><td class='t-right c-green'><i class='fas fa-check no-margin'></i></td>";
+
                 res.render("go_tx", {
                 "html_on_pooltx" : html_for_conf,
                 "stat_block_height":result_info_for_block_stats_page.result.height,
                 "stat_block_difficulty":result_info_for_block_stats_page.result.difficulty,
                 "stat_block_hashrate":(((result_info_for_block_stats_page.result.difficulty / 300) / 1000000).toFixed(2)) + " MH/s",
                 "stat_txcunt":result_info_for_block_stats_page.result.tx_count,
-                "stat_tx_pool_size":result_info_for_block_stats_page.result.tx_pool_size,
+                "stat_tx_pool_size": result_info_for_block_stats_page.result.tx_pool_size,
                 "tx_pool_data_size": result_info_for_block_stats_page.result.tx_pool_size * 1.73,
                 "stat_incom": result_info_for_block_stats_page.result.incoming_connections_count,
                 "stat_outgo": result_info_for_block_stats_page.result.outgoing_connections_count
@@ -209,7 +212,7 @@ app.get('/block', function(req, res) {
             }
             if(blocks_tx_array){
                 for(var k = 0; k < blocks_tx_array.length; k++){
-                txsHTML_inblock += "<tr><td>" + blocks_tx_array[k] + "</td><td>" + (last_block + 10) + "</td><td class='t-right c-green'><i class='fas fa-check no-margin'></i></td></tr>";
+                txsHTML_inblock += "<tr><td>" + blocks_tx_array[k] + "</td><td>" + (body_getblock.result.block_header.height + 10) + "</td><td class='t-right c-green'><i class='fas fa-check no-margin'></i></td></tr>";
                 }
             }else{
                  txsHTML_inblock += "<tr><td>" + "No transactions in this block!" + "</td></tr>";
@@ -255,7 +258,7 @@ app.get('/block', function(req, res) {
             }
             if(blocks_tx_array){
                 for(var k = 0; k < blocks_tx_array.length; k++){
-                txsHTML_inblock += "<tr><td>" + blocks_tx_array[k] + "</td><td>" + (last_block + 10) + "</td><td class='t-right c-green'><i class='fas fa-check no-margin'></i></td></tr>";
+                txsHTML_inblock += "<tr><td>" + blocks_tx_array[k] + "</td><td>" + (body_getblock.result.block_header.height + 10) + "</td><td class='t-right c-green'><i class='fas fa-check no-margin'></i></td></tr>";
                 }
             }else{
                  txsHTML_inblock += "<tr><td>" + "No transactions in this block!" + "</td></tr>";
