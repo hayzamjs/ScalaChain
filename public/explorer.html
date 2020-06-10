@@ -17,6 +17,7 @@
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
       <script src="js/scroll.js"></script>
       <script src="js/sorttable.js"></script>
+      <script src="js/miscellaneous.js"></script>
 
       <!-- Twitter -->
       <meta name="twitter:card" content="summary_large_image"/>
@@ -61,18 +62,7 @@
                 <input type="text" class="bg-black full-width" id="chain_data" placeholder="Height, Transaction or Block Hash...">
               </div>
               <div class="input-button">
-                <script>
-                  function goSearch(){
-                  var variable = document.getElementById("chain_data").value;
-                  var alphanumeric_variable = variable.replace(/[^a-z0-9]/gi,'');
-                  if(!isNaN(alphanumeric_variable)){ // is a number so can only be a block if being anything.
-                    location.href = "/block?block_info=" + alphanumeric_variable;
-                  }else{
-                    location.href = "/go?data=" + alphanumeric_variable;
-                  }
-                  }
-                </script>
-                <button class="button bg-blue"><i class="fas fa-search no-margin" onclick="goSearch();"></i></button>
+                <button class="button bg-blue" id="search-button"><i class="fas fa-search no-margin" onclick="goSearch();"></i></button>
               </div>
             </div>
           </section>
@@ -411,11 +401,7 @@
       gtag('js', new Date());
 
       gtag('config', 'UA-122317293-4');
-    </script>
-
-    <script>
-
-
 </script>
+<script src="js/miscellaneous.js"></script>
   </body>
 </html>
