@@ -95,6 +95,7 @@
                    <th>Difficulty</th>
                    <th>Time</th>
                    <th>Stamp</th>
+                   <th>Progress</th>
                    <th class="t-right">TX</th>
                  </tr>
                </thead>
@@ -106,6 +107,7 @@
                    <td>{{difficulty}}</td>
                    <td>{{time_ago}}</td>
                    <td>{{time_stamp}}</td>
+                   <td>5min 32s left</td>
                    <td class="t-right">{{tx_count}}</td>
                  </tr>
                </tbody>
@@ -134,10 +136,10 @@
            <div class="col x1-third">
              <article>
                <header>
-                 <h6 class="c-white">Network</h6>
+                 <h6>Network</h6>
                  <hr>
                </header>
-               <ul>
+               <ul class="c-grey">
                  <li>Block height&#58;<span class="right c-lighter">{{stat_block_height}}</span></li>
                  <li>Difficulty&#58;<span class="right c-lighter">{{stat_block_difficulty}}</span></li>
                  <li>Hashrate&#58;<span class="right c-lighter">{{stat_block_hashrate}}</span></li>
@@ -147,10 +149,10 @@
            <div class="col x1-third">
              <article>
                <header>
-                 <h6 class="c-white">Transactions</h6>
+                 <h6>Transactions</h6>
                  <hr>
                </header>
-               <ul>
+               <ul class="c-grey">
                  <li>Count&#58;<span class="right c-lighter">{{stat_txcunt}}</span></li>
                  <li>Pool size&#58;<span class="right c-lighter">{{stat_tx_pool_size}}</span></li>
                  <li>Transaction size&#58;<span class="right c-lighter">{{tx_pool_data_size}} kb</span></li>
@@ -160,10 +162,10 @@
            <div class="col x1-third">
              <article>
                <header>
-                 <h6 class="c-white">Connections</h6>
+                 <h6>Connections</h6>
                  <hr>
                </header>
-               <ul>
+               <ul class="c-grey">
                  <li>Incoming connections&#58;<span class="right c-lighter">{{stat_incom}}</span></li>
                  <li>Outgoing connections&#58;<span class="right c-lighter">{{stat_outgo}}</span></li>
                </ul>
@@ -208,7 +210,7 @@
               <header>
                 <h5 class="c-black">Plugins</h5>
               </header>
-              <ul class="c-darkgrey">
+              <ul>
                 <li><a href="https://github.com/scala-network/stellite-card-reader" target="_blank">Point of Sales</a></li>
                 <li><a href="https://github.com/scala-network/ScalaPay-Merchant-NPM" target="_blank">ScalaPay NPM</a></li>
                 <li><a href="https://github.com/scala-network/XTC-Stats" target="_blank">Monitoring Tool</a></li>
@@ -221,8 +223,8 @@
                 <h5 class="c-black">Exchanges</h5>
               </header>
               <ul>
-                <li><a href="https://tradeogre.com/exchange/BTC-XLA" target="_blank">Tradeogre BTC</a></li>
                 <li><a href="https://tradeogre.com/exchange/LTC-XLA" target="_blank">Tradeogre LTC</a></li>
+                <li><a href="https://tradeogre.com/exchange/BTC-XLA" target="_blank">Tradeogre BTC</a></li>
                 <li><a href="https://app.stex.com/en/trade/pair/BTC/XLA/" target="_blank">Stex</a></li>
               </ul>
             </section>

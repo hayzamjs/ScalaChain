@@ -6,8 +6,8 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 	-webkit-font-smoothing: antialiased;
 	font-smoothing: antialiased;
-	background: #1e2832;
-	color: #8fa2b6;
+	background: #1b1e24;
+	color: #c8d1e8;
 }
 
 *, *:after, *:before {
@@ -70,10 +70,17 @@ td {
 table, tr, td, th {
 	padding: 8px 8px 8px 0;
 	text-align: left;
+	vertical-align: top;
 }
 
+th, td {
+min-width: 80px;
+}
+
+table { min-width: 500px; overflow-x: scroll; }
+
 /* Typography */
-h1, h2, h3, h4, h5, b, th, .fat { font-weight: 700; }
+h1, h2, h3, h4, h5, h6, th { font-weight: normal; }
 h1, .h1 { font-size: 16px; line-height: 22px; padding-bottom: 4px; margin: 4px 0; font-weight: normal;}
 h2, .h2 { font-size: 16px; line-height: 22px; padding-bottom: 4px; margin: 4px 0; font-weight: normal;}
 h3, .h3 { font-size: 32px; line-height: 38px; padding-bottom: 4px; margin: 4px 0;}
@@ -123,24 +130,7 @@ footer li { padding-bottom: 8px; }
 .profile { border-radius: 100px; width: 40px; height: 40px; margin-right: 15px; float: left;}
 .icon-circle { border-radius: 100px; width: 40px; height: 40px; margin-right: 15px; float: left; line-height: 28px; padding-top: 6px;}
 .h-link:hover { cursor: pointer; }
-
-
-.search-bar {
-    position: relative;
-    margin-bottom: 20px;
-}
-
-.input-button {
-    position: absolute;
-    top: 4px;
-    right: 1px;
-}
-
-.input-button button {
-    margin: 0;
-		padding: 12px;
-}
-
+.wide-t { min-width: 500px; }
 
 /* Helpers */
 .top-fix { position: fixed; top: 0px; height: 48px; z-index: 9999;}
@@ -192,8 +182,25 @@ footer li { padding-bottom: 8px; }
 .x3-fifth { width: 60% }
 .x4-fifth { width: 80% }
 
+
+.search-bar {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.input-button {
+    position: absolute;
+    top: 4px;
+    right: 1px;
+}
+
+.input-button button {
+    margin: 0;
+		padding: 12px;
+}
+
 /* Mobile */
-@media(max-width:840px) {
+@media(max-width:640px) {
 	.container { margin: auto; padding: 0 16px; max-width: 1080px; }
     .row .col { width: 100%; padding-right: 0 }
     .fixed-col:last-of-type { padding: 0 }
@@ -231,6 +238,12 @@ footer li { padding-bottom: 8px; }
 
 		h1 { font-size: 16px; line-height: 20px; }
 
+}
+
+@media (max-width:940px) and (min-width:640px) {
+	.d-push-top { padding-top: 15%}
+	.medium-push-right { margin-right: 80px; }
+	.medium-full-width { width: 100%; }
 }
 
 @media(max-width:370px) {

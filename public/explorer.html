@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-      <title>Scala - Mobile, distributed and anonymous.</title>
+      <title>Scala - Blockchain Explorer</title>
       <meta name="description" content="Distributed wealth for all devices.">
       <meta name="author" content="Scala development team">
 
@@ -40,7 +40,7 @@
   <body>
 
     <!-- Navigation -->
-    <div class="top-fix bg-grey full-width">
+    <div class="top-fix bg-nav full-width">
       <div class="container">
         <nav>
           <div class="row">
@@ -79,11 +79,57 @@
         </div>
       </div>
 
+      <div class="row small push-bottom">
+        <section>
+          <header>
+            <h5><i class="far fa-chart-bar"></i> Network statistics</h5>
+          </header>
+          <div class="col x1-third">
+            <article>
+              <header>
+                <h6>Network</h6>
+                <hr>
+              </header>
+              <ul class="c-grey">
+                <li>Block height&#58;<span class="right c-lighter">{{block_height}}</span></li>
+                <li>Difficulty&#58;<span class="right c-lighter">{{difficulty_current}}</span></li>
+                <li>Hashrate&#58;<span class="right c-lighter">{{hashrate_current}}</span></li>
+              </ul>
+            </article>
+          </div>
+          <div class="col x1-third">
+            <article>
+              <header>
+                <h6>Transactions</h6>
+                <hr>
+              </header>
+              <ul class="c-grey">
+                <li>Count&#58;<span class="right c-lighter">{{transaction_count}}</span></li>
+                <li>Pool size&#58;<span class="right c-lighter">{{pool_tx_count}}</span></li>
+                <!--
+                  Swear to harambe will add this in later.
+                  <li>Transaction size&#58;<span class="right c-lighter">4.8 kb</span></li> !-->
+              </ul>
+            </article>
+          </div>
+          <div class="col x1-third">
+            <article>
+              <header>
+                <h6>Connections</h6>
+                <hr>
+              </header>
+              <ul class="c-grey">
+                <li>Incoming connections&#58;<span class="right c-lighter">{{incoming_conn_count}}</span></li>
+                <li>Outgoing connections&#58;<span class="right c-lighter">{{outgoing_conn_count}}</span></li>
+              </ul>
+            </article>
+          </div>
+        </section>
+      </div>
       <div class="row small push-bottom-hard">
-      <div class="col x2-third">
         <section class="push-bottom">
           <header>
-            <h5><i class="fas fa-hourglass"></i> Current block</h5>
+            <h5><i class="fas fa-cube"></i> Current block</h5>
           </header>
           <article>
             <table>
@@ -94,6 +140,7 @@
                   <th>Reward</th>
                   <th>Difficulty</th>
                   <th>Time</th>
+                  <th>Progress</th>
                   <th class="t-right">TX</th>
                 </tr>
               </thead>
@@ -104,6 +151,7 @@
                   <td>{{last_block_reward}}</td>
                   <td>{{last_block_difficulty}}</td>
                   <td>{{last_block_when}}</td>
+                  <td>5min 32s left</td>
                   <td class="t-right">{{last_block_txs_count}}</td>
                 </tr>
               </tbody>
@@ -160,47 +208,6 @@
         </section>
       </div>
 
-      <div class="col x1-third">
-        <section>
-          <header>
-            <h5><i class="far fa-chart-bar"></i> Network statistics</h5>
-          </header>
-          <article>
-            <header>
-              <h6 class="c-white">Network</h6>
-              <hr>
-            </header>
-            <ul>
-              <li>Block height&#58;<span class="right c-lighter">{{block_height}}</span></li>
-              <li>Difficulty&#58;<span class="right c-lighter">{{difficulty_current}}</span></li>
-              <li>Hashrate&#58;<span class="right c-lighter">{{hashrate_current}}</span></li>
-            </ul>
-          </article>
-          <article>
-            <header>
-              <h6 class="c-white">Transactions</h6>
-              <hr>
-            </header>
-            <ul>
-              <li>Count&#58;<span class="right c-lighter">{{transaction_count}}</span></li>
-              <li>Pool size&#58;<span class="right c-lighter">{{pool_tx_count}}</span></li>
-              <!--
-                Swear to harambe will add this in later.
-                <li>Transaction size&#58;<span class="right c-lighter">4.8 kb</span></li> !-->
-            </ul>
-          </article>
-          <article>
-            <header>
-              <h6 class="c-white">Connections</h6>
-              <hr>
-            </header>
-            <ul>
-              <li>Incoming connections&#58;<span class="right c-lighter">{{incoming_conn_count}}</span></li>
-              <li>Outgoing connections&#58;<span class="right c-lighter">{{outgoing_conn_count}}</span></li>
-            </ul>
-          </article>
-        </section>
-      </div>
     </div>
   </div>
     </div>
@@ -238,7 +245,7 @@
               <header>
                 <h5 class="c-black">Plugins</h5>
               </header>
-              <ul class="c-darkgrey">
+              <ul>
                 <li><a href="https://github.com/scala-network/stellite-card-reader" target="_blank">Point of Sales</a></li>
                 <li><a href="https://github.com/scala-network/ScalaPay-Merchant-NPM" target="_blank">ScalaPay NPM</a></li>
                 <li><a href="https://github.com/scala-network/XTC-Stats" target="_blank">Monitoring Tool</a></li>
@@ -251,8 +258,8 @@
                 <h5 class="c-black">Exchanges</h5>
               </header>
               <ul>
-                <li><a href="https://tradeogre.com/exchange/BTC-XLA" target="_blank">Tradeogre BTC</a></li>
                 <li><a href="https://tradeogre.com/exchange/LTC-XLA" target="_blank">Tradeogre LTC</a></li>
+                <li><a href="https://tradeogre.com/exchange/BTC-XLA" target="_blank">Tradeogre BTC</a></li>
                 <li><a href="https://app.stex.com/en/trade/pair/BTC/XLA/" target="_blank">Stex</a></li>
               </ul>
             </section>
