@@ -73,7 +73,7 @@ table, tr, td, th {
 }
 
 th, td {
-min-width: 80px;
+min-width: 85px;
 }
 
 table { min-width: 500px; overflow-x: scroll; }

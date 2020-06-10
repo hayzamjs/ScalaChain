@@ -151,7 +151,7 @@ app.get('/tx', function(req, res) {
              res.send("Transaction Not Found!");
          }else{
          if(body_txdata.txs[0].in_pool == true){
-         var html_for_inpool = "<td class='c-black'>"+got+"</td>" + "<td class='t-right'><i class='fas fa-hourglass-half no-margin c-black'></i></td>";
+         var html_for_inpool = "<td class='c-black'>"+got+"</td><td>" + (last_block + 10) + "</td><td class='t-right'><i class='fas fa-hourglass-half no-margin c-black'></i></td>";
          rpcClient.getInfo().then((result_info_for_block_stats_page) => {
             res.render("go_tx", {
             "html_on_pooltx" : html_for_inpool,
@@ -169,7 +169,7 @@ app.get('/tx', function(req, res) {
             });
          }
          if(body_txdata.txs[0].in_pool == false){
-            var html_for_conf = "<td class='c-black'>"+got+"</td>" + "<td class='t-right'><i class='fas fa-check no-margin'></i></td>";
+            var html_for_conf = "<td>"+got+"</td><td>" + (last_block + 10) + "</td><td class='t-right c-green'><i class='fas fa-check no-margin'></i></td>";
             rpcClient.getInfo().then((result_info_for_block_stats_page) => {
                 res.render("go_tx", {
                 "html_on_pooltx" : html_for_conf,
@@ -209,7 +209,7 @@ app.get('/block', function(req, res) {
             }
             if(blocks_tx_array){
                 for(var k = 0; k < blocks_tx_array.length; k++){
-                txsHTML_inblock += "<tr><td>" + blocks_tx_array[k] + "</td>" + "<td class='t-right c-green'><i class='fas fa-check no-margin'></i></td></tr>";
+                txsHTML_inblock += "<tr><td>" + blocks_tx_array[k] + "</td><td>" + (last_block + 10) + "</td><td class='t-right c-green'><i class='fas fa-check no-margin'></i></td></tr>";
                 }
             }else{
                  txsHTML_inblock += "<tr><td>" + "No transactions in this block!" + "</td></tr>";
@@ -255,7 +255,7 @@ app.get('/block', function(req, res) {
             }
             if(blocks_tx_array){
                 for(var k = 0; k < blocks_tx_array.length; k++){
-                txsHTML_inblock += "<tr><td>" + blocks_tx_array[k] + "</td>" + "<td class='t-right c-green'><i class='fas fa-check no-margin'></i></td></tr>";
+                txsHTML_inblock += "<tr><td>" + blocks_tx_array[k] + "</td><td>" + (last_block + 10) + "</td><td class='t-right c-green'><i class='fas fa-check no-margin'></i></td></tr>";
                 }
             }else{
                  txsHTML_inblock += "<tr><td>" + "No transactions in this block!" + "</td></tr>";
