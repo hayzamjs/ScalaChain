@@ -96,9 +96,7 @@
               <ul class="c-grey">
                 <li>Count&#58;<span class="right c-lighter">{{transaction_count}}</span></li>
                 <li>Pool size&#58;<span class="right c-lighter">{{pool_tx_count}}</span></li>
-                <!--
-                  Swear to harambe will add this in later.
-                  <li>Transaction size&#58;<span class="right c-lighter">4.8 kb</span></li> !-->
+                <li>Transaction size&#58;<span class="right c-lighter">{{tx_pool_data_size}} kb</span></li>
               </ul>
             </article>
           </div>
@@ -130,7 +128,6 @@
                   <th>Reward</th>
                   <th>Difficulty</th>
                   <th>Time</th>
-                  <th>Progress</th>
                   <th class="t-right">TX</th>
                 </tr>
               </thead>
@@ -141,7 +138,6 @@
                   <td>{{last_block_reward}}</td>
                   <td>{{last_block_difficulty}}</td>
                   <td>{{last_block_when}}</td>
-                  <td>5min 32s left</td>
                   <td class="t-right">{{last_block_txs_count}}</td>
                 </tr>
               </tbody>
@@ -179,7 +175,7 @@
           <section class="push-bottom">
             <article>
               <header>
-                <h5><i class="fas fa-history"></i> Latest 5 blocks</h5>
+                <h5><i class="fas fa-history"></i> Latest 10 blocks</h5>
               </header>
               <table class="small">
                 <thead>

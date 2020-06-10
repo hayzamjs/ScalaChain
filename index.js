@@ -10,7 +10,7 @@ const mustacheExpress = require('mustache-express');
 
 /* I have no idea where I got this from */
 function fancyTimeFormat(time)
-{   
+{
 var hrs = ~~(time / 3600);
 var mins = ~~((time % 3600) / 60);
 var secs = ~~time % 60;
@@ -68,9 +68,9 @@ rpcClient.getInfo().then((result_info) => {
             var prev_block_hash = prev_blocks_array[j].hash;
             var res_prev_hash = prev_block_hash.substring(0, 5) + "..." + prev_block_hash.substr(prev_block_hash.length - 5);
             prev_blocks_html += "<tr><td><a href='/go?data="+prev_block_hash+"'>"
-            + res_prev_hash + "</a></td><td>" 
-            + prev_blocks_array[j].height + "</td>" 
-            + "<td>" + (prev_blocks_array[j].reward / 100) + "</td><td>" 
+            + res_prev_hash + "</a></td><td>"
+            + prev_blocks_array[j].height + "</td>"
+            + "<td>" + (prev_blocks_array[j].reward / 100) + "</td><td>"
             + prev_blocks_array[j].difficulty + "</td><td>"
             + time_of_prev_block + "</td>" +"<td class='t-right'>"+prev_blocks_array[j].num_txes+"</td></tr>";
         }
@@ -78,18 +78,18 @@ rpcClient.getInfo().then((result_info) => {
       }
         //More than the cancer I have..I know..LOLZZ
         if(last_blocks_tx_array){
-            last_blocks_txs_html = "<thead><tr><th>Transaction hash</th><th class='t-right'>Status</th></tr></thead><tbody>"; 
+            last_blocks_txs_html = "<thead><tr><th>Transaction hash</th><th>Unlocked in</th><th class='t-right'>Status</th></tr></thead><tbody>";
             var last_blocks_tx_array_length = last_blocks_tx_array.length;
             for (var i = 0; i < last_blocks_tx_array_length; i++) {
-                last_blocks_txs_html += "<tr><td>" + last_blocks_tx_array[i] + "</td>" + "<td class='t-right c-green'><i class='fas fa-check no-margin'></i></td></tr>";
+                last_blocks_txs_html += "<tr><td>" + last_blocks_tx_array[i] + "</td><td>" + unlock_time + "</td><td class='t-right c-green'><i class='fas fa-check no-margin'></i></td></tr>";
             }
             last_blocks_txs_html += "</tbody>"
         }else{
-            last_blocks_txs_html = "<thead><tr><th>No Transactions in the last block!</th></tr></thead>"; 
+            last_blocks_txs_html = "<thead><tr><th>No Transactions in the last block!</th></tr></thead>";
         }
                 res.render("explorer",{
-                    "block_height":result_info.result.height, 
-                    "difficulty_current":result_info.result.difficulty, 
+                    "block_height":result_info.result.height,
+                    "difficulty_current":result_info.result.difficulty,
                     "hashrate_current":(((result_info.result.difficulty / 300) / 1000000).toFixed(2)) + " MH/s",
                     "transaction_count":result_info.result.tx_count,
                     "pool_tx_count":tx_length,
@@ -126,7 +126,7 @@ request.post({
     headers: {'content-type' : 'application/json'},
     url:     "http://xlanode.com:20189/json_rpc",
     json:    {"jsonrpc":"2.0","id":"0","method":"get_block","params":{"hash": got}}
-  }, function(error1, response1, body_getblock){ 
+  }, function(error1, response1, body_getblock){
     if(body_getblock.result == undefined){
         res.redirect("/tx?tx_hash="+got);
     }
@@ -136,7 +136,7 @@ request.post({
     });
 });
 
-app.get('/tx', function(req, res) { 
+app.get('/tx', function(req, res) {
     var got = req.query.tx_hash;
     request.post({
         headers: {'content-type' : 'application/json'},
@@ -191,7 +191,7 @@ app.get('/tx', function(req, res) {
     });
 });
 
-app.get('/block', function(req, res) { 
+app.get('/block', function(req, res) {
     var got = req.query.block_info;
     if(!isNaN(got)){
         request.post({
