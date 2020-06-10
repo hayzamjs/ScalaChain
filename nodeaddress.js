@@ -1,1 +1,1 @@
-module.exports = { NODE_ADDRESS: "http://xlanode.com:20189" };
+module.exports = { NODE_ADDRESS: "http://scalanode.com:20189" };

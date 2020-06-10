@@ -36,13 +36,10 @@ rpcClient.getInfo().then((result_info) => {
 
     if(!result_transactions.transactions){
         tx_length = 0;
-        //console.log("TX Pool empty!")
     }else{
         tx_length = result_transactions.transactions.length;
-        //console.log("TX Pool NOT empty!")
     }
 
-    //console.log(result_info.result.height);
     request.post({
         headers: {'content-type' : 'application/json'},
         url:     "http://xlanode.com:20189/json_rpc",
@@ -53,16 +50,13 @@ rpcClient.getInfo().then((result_info) => {
             url:     "http://xlanode.com:20189/json_rpc",
             json:    {"jsonrpc":"2.0","id":"0","method":"get_block_headers_range","params":{"start_height":last_block - 5,"end_height": last_block - 1}}
           }, function(error2, response2, body_range){
-        //console.log((body_range.result.headers).reverse());
-        //console.log(body_range.result.headers[0]);
 
-        if(error1){console.log(error1)}
-        if(error2){console.log(error1)}
+        if(error1){console.log(error1);}
+        if(error2){console.log(error1);}
         var str_hash = body_getblock.result.block_header.hash;
         var res_tophash = str_hash.substring(0, 5) + "..." + str_hash.substr(str_hash.length - 5);
         var timeNow = new Date().getTime()/1000;
         var blocksTime = timeNow - body_getblock.result.block_header.timestamp;
-
         var last_blocks_tx_array = body_getblock.result.tx_hashes;
         var last_blocks_txs_html;
         var prev_blocks_array = (body_range.result.headers).reverse(); //Reversed for correct chronology.
@@ -148,10 +142,14 @@ app.get('/tx', function(req, res) {
         headers: {'content-type' : 'application/json'},
         url:     "http://xlanode.com:20189/get_transactions",
         json:    {"txs_hashes":[got]}
-      }, function(error1, response1, body_txdata){ 
+      }, function(error1, response1, body_txdata){
+         if(body_txdata.status.includes("Failed to parse hex representation of transaction hash")){
+            res.send("Transaction malformed!");
+         }
+         else{
          if(body_txdata.missed_tx){
              res.send("Transaction Not Found!");
-         }
+         }else{
          if(body_txdata.txs[0].in_pool == true){
          var html_for_inpool = "<td class='c-black'>"+got+"</td>" + "<td class='t-right'><i class='fas fa-hourglass-half no-margin c-black'></i></td>";
          rpcClient.getInfo().then((result_info_for_block_stats_page) => {
@@ -188,12 +186,14 @@ app.get('/tx', function(req, res) {
                     console.log(err)
                 });
          }
+        }
+        }
     });
 });
 
 app.get('/block', function(req, res) { 
     var got = req.query.block_info;
-    if(!isNaN(got)){ // is a fucking number
+    if(!isNaN(got)){
         request.post({
             headers: {'content-type' : 'application/json'},
             url:     "http://xlanode.com:20189/json_rpc",
