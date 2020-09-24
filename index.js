@@ -88,7 +88,7 @@ app.get('/prove', async (req, res) => {
 })
 
 app.post('/prove', async (req, res) => {
-  const proof = await proveTransacion(req.body.tx_hash, req.body.key, req.body.address, req.body.method)
+  const proof = await proveTransacion(req.body.tx_hash, req.body.address, req.body.key, req.body.method)
   if (proof === true) {
     res.send(true)
   } else {
