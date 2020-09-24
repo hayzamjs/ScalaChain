@@ -68,29 +68,128 @@
         </div>
       </div>
 
+      <!-- Basic -->
       <div class="row small">
         <div class="col">
+
           <section>
             <header>
-              <h5><i class="fas fa-search"></i> Your search result</h5>
+              <h5><i class="fas fa-search"></i> Basic Transaction Information</h5>
             </header>
             <article>
               <table>
                 <thead>
                   <tr>
                     <th>Transaction hash</th>
-                    <th>Unlock Block</th>
+                    <th>Mixins</th>
                     <th class="t-right">Status</th>
                   </tr>
+
                 </thead>
                 <tbody>
                   <tr>
-                    {{{html_on_pooltx}}}
+                    <td>{{tx_hash}}</td>
+                    <td>{{mixins}}</td>
+                    <td class='t-right c-green'>
+                      {{{tx_status}}}
+                    </td>
                   </tr>
                 </tbody>
               </table>
             </article>
             </section>
+
+            <section>
+              <header>
+                <h5><i class="fa fa-sign-in-alt"></i> Inputs</h5>
+              </header>
+              <article>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Amount</th>
+                      <th>Key Image</th>
+                    </tr>
+  
+                  </thead>
+                  <tbody>
+                    {{{key_image_inputs}}}
+                  </tbody>
+                </table>
+              </article>
+              </section>
+
+              <section>
+                <header>
+                  <h5><i class="fa fa-sign-out-alt"></i> Outputs</h5>
+                </header>
+                <article>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Amount</th>
+                        <th>Public Key</th>
+                      </tr>
+    
+                    </thead>
+                    <tbody>
+                      {{{key_image_outputs}}}
+                    </tbody>
+                  </table>
+                </article>
+                </section>
+
+            <!-- Inputs -->
+            <section>
+              <header>
+                <h5><i class="fa fa-magic"></i> Extra Transaction Information</h5>
+              </header>
+              <article>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Data</th>
+                      <th>Value</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Transaction Extra(tx_extra)</td>
+                      <td>{{tx_extra}}</td>
+                    </tr>
+                    <tr>
+                      <td>Payment ID</td>
+                      <td>{{{payment_id}}}</td>
+                    </tr>
+                    <tr>
+                      <td>RCT Type</td>
+                      <td>{{rct_type}}</td>
+                    </tr>
+                    <tr>
+                      <td>Timestamp</td>
+                      <td>{{timestamp}}</td>
+                    </tr>
+                    <tr>
+                      <td>Timestamp UTC</td>
+                      <td>{{timestamp_utc}}</td>
+                    </tr>
+                    <tr>
+                      <td>Transaction Fee</td>
+                      <td>{{tx_fee}}</td>
+                    </tr>
+                    <tr>
+                      <td>Transaction Size</td>
+                      <td>{{tx_size}}</td>
+                    </tr>
+                    <tr>
+                      <td>Transaction Version</td>
+                      <td>{{tx_version}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </article>
+              </section>
+
           </div>
         </div>
 
@@ -119,7 +218,7 @@
                  <hr>
                </header>
                <ul class="c-grey">
-                 <li>Count&#58;<span class="right c-lighter">{{stat_txcunt}}</span></li>
+                 <li>Count&#58;<span class="right c-lighter">{{stat_txcount}}</span></li>
                  <li>Pool size&#58;<span class="right c-lighter">{{stat_tx_pool_size}}</span></li>
                  <li>Transaction size&#58;<span class="right c-lighter">{{tx_pool_data_size}} kb</span></li>
                </ul>

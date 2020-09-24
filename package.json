@@ -1,10 +1,12 @@
 {
   "name": "scala_chain",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "description": "A simple explorer for Scala Network",
   "main": "index.js",
   "scripts": {
-    "test": "start"
+    "start": "node index.js",
+    "dev": "nodemon . -e *",
+    "fix-coe": "standard --fix"
   },
   "keywords": [
     "explorer",
@@ -15,7 +17,13 @@
   "license": "GPL-3.0",
   "dependencies": {
     "bent": "^7.3.10",
+    "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "mustache-express": "^1.3.0"
+  },
+  "standard": {
+    "ignore": [
+      "public/"
+    ]
   }
 }

@@ -145,7 +145,7 @@
           </article>
           <article>
             <table>
-              {{{last_tx_hashes}}}
+              {{{last_blocks_transactions}}}
               <!--
               <thead>
                 <tr>
@@ -220,6 +220,7 @@
                 <h5 class="c-black">Essentials</h5>
               </header>
               <ul>
+                <li><a href="/prove">Prove Transactions</a></li>
                 <li><a href="https://explorer.scalaproject.io/">Explorer</a></li>
                 <li><a href="https://scalaproject.io/paper-wallet.php">Paper Wallet</a></li>
                 <li><a href="https://scalaproject.io/pools.php">Mining Pools</a></li>
@@ -399,5 +400,11 @@
       gtag('config', 'UA-122317293-4');
 </script>
 <script src="js/miscellaneous.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script>
+  if(window.location.href.includes(bad_go)){
+    swal("Error", "The data you gave as input is bad", "error");
+  }
+</script>
   </body>
 </html>
