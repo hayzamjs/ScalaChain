@@ -103,11 +103,20 @@
     <script>
 
       $('#methodOne').click(function() {
-        alert(123)
+        var tx_hash = $("#tx_hash_1").val();
+        var key = $("#tx_key").val();
+        var address = $("#rec_1").val();
+        $.post("/prove", {tx_hash: tx_hash, key:key, address:address, method:0}, function(result){
+                if(result == true){
+                  swal("Verified", "The transaction is verified for given keys", "success");
+                }else{
+                  swal("Not Verified", "The transaction cannot be verified for given data", "error");
+                }
+          });
       });
 
       $('#methodTwo').click(function() {
-        var tx_hash = $("#view_key").val();
+        var tx_hash = $("#tx_hash_2").val();
         var key = $("#view_key").val();
         var address = $("#rec_2").val();
           $.post("/prove", {tx_hash: tx_hash, key:key, address:address, method:1}, function(result){
