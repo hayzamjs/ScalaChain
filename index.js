@@ -1,204 +1,296 @@
-const rpcClientClass = require('monero-rpc-client');
-var nodeaddr = require('./nodeaddress');
-const rpcClient = new rpcClientClass(nodeaddr.NODE_ADDRESS);
-const express = require('express');
-const app = express();
-const port = 6969;
-const btoa = require("btoa");
-const request = require('request');
+/* Express and Templating */
+const express = require('express')
+const app = express()
+const port = 1932
+const path = require('path')
+const bodyParser = require('body-parser')
+const mustacheExpress = require('mustache-express')
 
-const mustacheExpress = require('mustache-express');
-
-app.engine('html', mustacheExpress());
-app.set('view engine', 'html');
-app.set('views', __dirname + '/mustache_templates');
+app.use(bodyParser.urlencoded({
+  extended: true
+}))
+app.use(bodyParser.json())
+app.engine('html', mustacheExpress())
+app.set('view engine', 'html')
+app.set('views', path.join(__dirname, '/public'))
 app.use(express.static('public'))
 
+/* Requests */
+const bent = require('bent')
 
-app.get('/getinfo', function(req, res) {
-    rpcClient.getInfo().then((result) => {
-        res.send(result);
-    }).catch((err) => {});
-})
+/* Configurations */
 
-app.get('/check/:hash', function(req, res) {
-    var pp = req.params.hash;
-    var letterNumber = /^[0-9a-zA-Z]+$/;
+const config = require('./config')
+const explorerAPI = config.EXPLORER_API
+const nodeAddress = config.NODE_ADDRESS
 
-    if(pp.length != 64 && !(pp.match(letterNumber))){
-        res.redirect("/error.html");
-    }
+const GET_EXPLORER_API = bent(explorerAPI, 'GET', 'json', 200)
+const POST_NODE_API = bent(nodeAddress, 'POST', 'json', 200)
 
-    else{
-    var headers = {
-        'Content-Type': 'application/json'
-    };
-    
-    var dataString = '{"jsonrpc":"2.0","id":"0","method":"get_block","params":{"hash":"' + pp +'"}}';
-    
-    var options = {
-        url: nodeaddr.NODE_ADDRESS+'/json_rpc',
-        method: 'POST',
-        headers: headers,
-        body: dataString
-    };
-    
-    function callback(error, response, body) {
-        if (!error && response.statusCode == 200) {
-            var bodyParsed = JSON.parse(body);
-            if(bodyParsed.result == undefined){
-            res.redirect("/tx/"+pp);
-            }
-            else{
-                res.redirect("/block/"+pp);
-            }
-        }
-    }
-    
-    request(options, callback);
+async function getBlock (heightOrHash) {
+  if (isNaN(heightOrHash) === true) {
+    return await POST_NODE_API('/json_rpc', { jsonrpc: '2.0', id: '0', method: 'get_block', params: { hash: heightOrHash } })
+  } else {
+    return await POST_NODE_API('/json_rpc', { jsonrpc: '2.0', id: '0', method: 'get_block', params: { height: heightOrHash } })
+  }
 }
-})
 
-// Get by a single block call was a complete cluster fuck hence the custom call.
-app.get('/block/:hash', function(req, res) {
-var dataString;
-var headers = {
-        'Content-Type': 'application/json'
-};
-    //not a number
-    if(isNaN(req.params.hash)){
-    dataString = '{"jsonrpc":"2.0","id":"0","method":"get_block","params":{"hash":"'+req.params.hash+'"}}';
-    }
-    else{
-    dataString = '{"jsonrpc":"2.0","id":"0","method":"get_block","params":{"height":"'+req.params.hash+'"}}';
-    }
-var options = {
-        url: nodeaddr.NODE_ADDRESS+'/json_rpc',
-        method: 'POST',
-        headers: headers,
-        body: dataString
-};
-    
-function callback(error, response, body) {
-        if (!error && response.statusCode == 200) {
-            var bodyParsed = JSON.parse(body);
-            if(bodyParsed.result == undefined){
-                res.send("INVALID!");
-            }
-            else{
-                var txx = [];
-                var block_hash = bodyParsed.result.block_header.hash; // Hash of the block
-                var difficulty =  bodyParsed.result.block_header.difficulty; // difficulty of the block
-                var cumulative_difficulty =  bodyParsed.result.block_header.cumulative_difficulty; //Cumulative difficulty upto the block.
-                var height = bodyParsed.result.block_header.height; //height of the block
-                var major_version = bodyParsed.result.block_header.major_version; //minor version of the block
-                var minor_version = bodyParsed.result.block_header.minor_version; //major version of the block
-                var nonce = bodyParsed.result.block_header.nonce; //nonce of the block
-                var reward = bodyParsed.result.block_header.reward/100; //total reward of this block
-                var timestamp = bodyParsed.result.block_header.timestamp; //timestamp of when the block was found
-                if(bodyParsed.result.tx_hashes){
-                for(var i = 0; i<= bodyParsed.result.tx_hashes.length - 1; i++){
-                   txx.push(bodyParsed.result.tx_hashes[i]);
-                }
-                //console.log(JSON.stringify(txx));
-                res.render('block', {"block_number": height,"block_hash":block_hash,"cumulative_diff":cumulative_difficulty,"diff":difficulty,
-                "reward":reward,"version":major_version+"."+minor_version,"nonce":nonce,"timestamp":timestamp,
-                "tx_hashes":txx});
-                }
-                else{
-                res.render('block', {"block_number": height,"block_hash":block_hash,"cumulative_diff":cumulative_difficulty,"diff":difficulty,
-                "reward":reward,"version":major_version+"."+minor_version,"nonce":nonce,"timestamp":timestamp,
-                "tx_hashes":"Empty"});
-                }
-            }
-        }
+async function getBlockRange (startHeight, endHeight) {
+  return await POST_NODE_API('/json_rpc', { jsonrpc: '2.0', id: '0', method: 'get_block_headers_range', params: { start_height: startHeight, end_height: endHeight } })
 }
-    
-request(options, callback);
+
+async function getNetworkInfo () {
+  return await GET_EXPLORER_API('/api/networkinfo')
+}
+
+async function getTransaction (txHash) {
+  return await GET_EXPLORER_API(`/api/transaction/${txHash}`)
+}
+
+async function proveTransacion (txHash, address, key, method) {
+  const proof = await GET_EXPLORER_API(`/api/outputs?txhash=${txHash}&address=${address}&viewkey=${key}&txprove=${method}`)
+  if (proof.status !== 'error') {
+    if (proof.data.tx_prove === true) {
+      return true
+    }
+    return false
+  }
+  return false
+}
+
+async function isBlock (data) {
+  const getBlock = await POST_NODE_API('/json_rpc', { jsonrpc: '2.0', id: '0', method: 'get_block', params: { hash: data } })
+  if (getBlock.error) {
+    return false
+  } else {
+    return true
+  }
+}
+
+async function getMempoolSize () {
+  const memPool = await GET_EXPLORER_API('/api/mempool')
+  const memPoolTxs = memPool.data.txs
+  const memPoolTxCount = memPool.data.txs_no
+  let sizeOfPool = 0
+
+  if (memPoolTxCount !== 0) {
+    memPoolTxs.forEach(tx => {
+      sizeOfPool += tx.tx_size
+    })
+    return (sizeOfPool / 1000) /* To get it in kilobytes */
+  } else {
+    return 0
+  }
+}
+
+app.get('/prove', async (req, res) => {
+  res.render('prove')
 })
 
-app.get('/tx/:hash', function(req, res) {
-    var headers = {
-        'Content-Type': 'application/json'
-    };
-    
-    var dataString = '{"txs_hashes":["'+req.params.hash+'"]}';
-    
-    var options = {
-        url: nodeaddr.NODE_ADDRESS+'/get_transactions',
-        method: 'POST',
-        headers: headers,
-        body: dataString
-    };
-    
-    function callback(error, response, body) {
-        if (!error && response.statusCode == 200) {
-            var bodyParsed = JSON.parse(body);
-            if(bodyParsed.missed_tx){
-            res.send("Transaction not found!");
-            }
-            if(bodyParsed.txs != undefined){
-            var tx_hash = bodyParsed.txs[0].tx_hash;
-            var confirmStatus;
-            if(bodyParsed.txs[0].in_pool == false){
-              confirmStatus = "Confirmed";
-            var block_height = bodyParsed.txs[0].block_height;
-            var block_timestamp = bodyParsed.txs[0].block_timestamp;
-            res.render('tx', {"tx_hash": tx_hash, "confirm_status":confirmStatus, "block_height":block_height,"block_timestamp":block_timestamp});
-            }
-            else{
-              confirmStatus = "Not confirmed";
-              res.render('tx', {"tx_hash": tx_hash, "confirm_status":confirmStatus, "block_height":"Unconfirmed","block_timestamp":"Unconfirmed"});
+app.post('/prove', async (req, res) => {
+  const proof = await proveTransacion(req.body.tx_hash, req.body.key, req.body.address, req.body.method)
+  if (proof === true) {
+    res.send(true)
+  } else {
+    res.send(false)
+  }
+})
 
-            }           
-            }
-        }
+app.get('/', async (req, res) => {
+  /* Network info */
+  const networkInfo = await getNetworkInfo()
+
+  /* Transactions */
+  const sizeOfPool = await getMempoolSize()
+
+  /* Last block info */
+  const lastHeight = networkInfo.data.height - 1
+  const lastBlockInfo = await getBlock(lastHeight)
+  const lastBlockTxHashes = lastBlockInfo.result.tx_hashes
+  const transactionsCount = lastBlockInfo.result.block_header.num_txes
+
+  /* Transactions inside the last block */
+  let transactionsHTML = ''
+
+  if (transactionsCount > 0) {
+    transactionsHTML = `<thead>
+        <tr>
+            <th>Transaction hash</th>
+            <th>Unlock Block</th>
+            <th class='t-right'>Status</th>
+        </tr>
+        </thead>
+        <tbody>`
+    lastBlockTxHashes.forEach(txHash => {
+      transactionsHTML += `<tr>
+                                     <td>${txHash}</td>
+                                     <td>${lastHeight + 10}</td>
+                                     <td class='t-right c-green'>
+                                        <i class='fas fa-check no-margin'></i>
+                                    </td>
+                                  </tr>`
+    })
+    transactionsHTML += '</tbody>'
+  } else {
+    transactionsHTML = '<thead><tr><th>No Transactions in the last block</th></tr></thead>'
+  }
+
+  /* Previous 10 blocks */
+
+  const tenBlocks = await getBlockRange((lastHeight - 11), (lastHeight - 1))
+  const tenBlocksHeaders = (tenBlocks.result.headers).reverse()
+  let tenBlocksHTML = '<tbody id=\'txBody2\'>'
+  tenBlocksHeaders.forEach(header => {
+    const headerLink = `/block?block_info=${header.hash}`
+    tenBlocksHTML += `<tr><td><a href="${headerLink}">${header.hash.substring(0, 5)}...${header.hash.substring(header.hash.length - 5)}</a></td><td>${header.height}</td><td>${(header.reward) / 100}</td>
+        <td>${(header.difficulty)}</td><td>${(header.timestamp)}</td><td class='t-right'>${(header.num_txes)}</td></tr>`
+  })
+  tenBlocksHTML += '</tbody>'
+
+  res.render('explorer',
+    {
+      block_height: networkInfo.data.height,
+      difficulty_current: networkInfo.data.difficulty,
+      hashrate_current: (((networkInfo.data.difficulty) / 120) / 1000000).toFixed(2),
+      pool_tx_count: networkInfo.data.tx_pool_size,
+      tx_pool_data_size: (sizeOfPool).toFixed(2),
+      transaction_count: networkInfo.data.tx_count,
+      incoming_conn_count: networkInfo.data.incoming_connections_count,
+      outgoing_conn_count: networkInfo.data.outgoing_connections_count,
+      last_hash_top: lastBlockInfo.result.block_header.hash,
+      last_block_height_top: lastBlockInfo.result.block_header.height,
+      last_block_reward: ((lastBlockInfo.result.block_header.reward) / 100),
+      last_block_difficulty: lastBlockInfo.result.block_header.difficulty,
+      last_block_when: lastBlockInfo.result.block_header.timestamp,
+      last_block_txs_count: transactionsCount,
+      prev_blocks_html: tenBlocksHTML,
+      last_blocks_transactions: transactionsHTML
+    })
+})
+
+app.get('/tx', async (req, res) => {
+  const networkInfo = await getNetworkInfo()
+  const txInfo = await getTransaction(req.query.tx_info)
+  const confirmed = ((txInfo.data.current_height - txInfo.data.block_height) > 10)
+  let txStatus = ''
+  let paymentId = ''
+  const sizeOfPool = await getMempoolSize()
+
+  if (confirmed) {
+    txStatus += '<i class=\'fa fa-check no-margin\'></i>'
+  } else {
+    txStatus += '<i class=\'fa fa-clock no-margin\'></i>'
+  }
+
+  if (txInfo.data.payment_id !== '' || txInfo.data.payment_id8 !== '') {
+    paymentId += '<i class="fa fa-times" aria-hidden="true"></i>'
+  } else {
+    if (txInfo.data.payment_id !== '') {
+      paymentId += txInfo.data.payment_id
+    } else {
+      paymentId += txInfo.data.payment_id8
     }
-    request(options, callback);
-});
+  }
 
-app.get('/gettxs', function(req, res) {
-    rpcClient.getTransactionPool().then((result) => {
-        if (result.status == "OK" && result.transactions.length > 0) {
-            var txs = [];
-            for (let i = 0; i <= result.transactions.length - 1; i++) {
-                let fee = result.transactions[i].fee.toString();
-                let id_hash = result.transactions[i].id_hash;
-                let oneTx = fee + "||" + id_hash;
-                let oneTxb64 = btoa(oneTx);
-                txs.push(oneTxb64);
-            }
-            res.send(JSON.stringify(Object.assign({}, txs)));
-        } else {
-            res.send("OK");
-        }
-    }).catch((err) => {});
-});
+  let keyImagesInputHTML = ''
+  let keyImagesOutputHTML = '';
 
-//Get by range wasn't implemented hence the direct call!
-app.get('/getBlocks', function(req, res) {
-    rpcClient.getBlockCount().then((result) => {
-        var countEnd = result.result.count - 1;
-        var countStart = result.result.count - 11;
-        var headers = {
-            'Content-Type': 'application/json'
-        };
-        var dataString = '{"jsonrpc":"2.0","id":"0","method":"get_block_headers_range","params":{"start_height":' + countStart + ',"end_height":' + countEnd + '}}';
-        var options = {
-            url: nodeaddr.NODE_ADDRESS+'/json_rpc',
-            method: 'POST',
-            headers: headers,
-            body: dataString
-        };
+  (txInfo.data.inputs).forEach(input => {
+    keyImagesInputHTML += `<tr><td>?</td><td>${input.key_image}</td></tr>`
+  });
 
-        function callback(error, response, body) {
-            if (!error && response.statusCode == 200) {
-                res.send(body);
-            }
-        }
-        request(options, callback);
+  (txInfo.data.outputs).forEach(output => {
+    keyImagesOutputHTML += `<tr><td>?</td><td>${output.public_key}</td></tr>`
+  })
 
-    }).catch((err) => {});
-});
+  res.render('go_tx',
+    {
+      tx_hash: txInfo.data.tx_hash,
+      mixins: txInfo.data.mixin,
+      tx_status: txStatus,
+      tx_extra: txInfo.data.extra,
+      payment_id: paymentId,
+      rct_type: txInfo.data.rct_type,
+      timestamp: txInfo.data.timestamp,
+      timestamp_utc: txInfo.data.timestamp_utc,
+      tx_fee: `${(txInfo.data.tx_fee / 100)} XLA`,
+      tx_size: `${(txInfo.data.tx_size / 1000).toFixed(2)} kb`,
+      tx_version: txInfo.data.tx_version,
+      key_image_inputs: keyImagesInputHTML,
+      key_image_outputs: keyImagesOutputHTML,
+      stat_block_height: networkInfo.data.height,
+      stat_block_difficulty: networkInfo.data.difficulty,
+      stat_block_hashrate: (((networkInfo.data.difficulty) / 120) / 1000000).toFixed(2),
+      stat_txcount: networkInfo.data.tx_count,
+      stat_tx_pool_size: networkInfo.data.tx_pool_size,
+      tx_pool_data_size: sizeOfPool,
+      stat_incom: networkInfo.data.incoming_connections_count,
+      stat_outgo: networkInfo.data.outgoing_connections_count
+    })
+})
+
+app.get('/search', async (req, res) => {
+  const vin = await isBlock(req.query.data)
+  if (vin === true) {
+    res.redirect(`/block?block_info=${req.query.data}`)
+  } else {
+    res.redirect(`/tx?tx_info=${req.query.data}`)
+  }
+})
+
+app.get('/block', async (req, res) => {
+  const gotBlockInfo = req.query.block_info
+  const blockInfo = await getBlock(gotBlockInfo)
+  const lastBlockTxHashes = blockInfo.result.tx_hashes
+  const transactionsCount = blockInfo.result.block_header.num_txes
+  const networkInfo = await getNetworkInfo()
+  const sizeOfPool = await getMempoolSize()
+
+  let blockTxsHTML = ''
+  if (transactionsCount > 0) {
+    blockTxsHTML += `<thead>
+        <tr>
+            <th>Transaction hash</th>
+            <th>Unlock Block</th>
+            <th class='t-right'>Status</th>
+        </tr>
+        </thead>
+        <tbody>`
+
+    lastBlockTxHashes.forEach(txHash => {
+      blockTxsHTML += `<tr>
+                                     <td>${txHash}</td>
+                                     <td>${blockInfo.result.block_header.height + 10}</td>
+                                     <td><td class='t-right c-green'>
+                                        <i class='fas fa-check no-margin'></i>
+                                    </td>
+                                  </tr>`
+    })
+
+    blockTxsHTML += '</tbody>'
+  } else {
+    blockTxsHTML = '<thead><tr><th>No Transactions in this block</th></tr></thead>'
+  }
+
+  res.render('go_block',
+    {
+      block_hash: blockInfo.result.block_header.hash,
+      block_height: blockInfo.result.block_header.height,
+      block_reward: ((blockInfo.result.block_header.reward) / 100),
+      difficulty: blockInfo.result.block_header.difficulty,
+      time_ago: blockInfo.result.block_header.timestamp,
+      time_stamp: blockInfo.result.block_header.timestamp,
+      tx_count: transactionsCount,
+      inblock_txs: blockTxsHTML,
+      stat_block_height: networkInfo.data.height,
+      stat_block_difficulty: networkInfo.data.difficulty,
+      stat_block_hashrate: (((networkInfo.data.difficulty) / 120) / 1000000).toFixed(2),
+      stat_txcount: networkInfo.data.tx_count,
+      stat_tx_pool_size: networkInfo.data.tx_pool_size,
+      tx_pool_data_size: sizeOfPool,
+      stat_incom: networkInfo.data.incoming_connections_count,
+      stat_outgo: networkInfo.data.outgoing_connections_count
+    })
+})
 
 app.listen(port, () => console.log(`ScalaChain app listening on port ${port}!`))
