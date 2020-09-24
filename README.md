@@ -1,9 +1,9 @@
 
 # ScalaChain
 
-A light weight Explorer for Scala Network.
+A light weight Explorer for Scala Network based on [onion-monero-blockchain-explorer](https://github.com/moneroexamples/onion-monero-blockchain-explorer) and the Scala [daemon](https://github.com/scala-network/scala).
 
-![Screenshot](https://i.imgur.com/d0qTmHj.png)
+![Screenshot](https://i.imgur.com/1lsSGxf.png)
 
 ## Getting Started
 
@@ -13,8 +13,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 * Node v8.0.0+
 * NPM 5.0.0+
-* Scala Daemon RPC
-
+* Scala Daemon
 
 ### Installing
 
@@ -23,14 +22,8 @@ npm install
 node index.js
 ```
 
-There will be a web interface at http://localhost:6969/
+There will be a web interface at http://localhost:1932/
 
 ## License
 
 This project is licensed under the GPLv3 License - see the [LICENSE](https://github.com/hayzamjs/ScalaChain/blob/master/LICENSE)  file for details
-
-## Todo
-
- * [ ] Code Refactor
- * [ ] Create JSON API
- * [ ] Change UI to be better

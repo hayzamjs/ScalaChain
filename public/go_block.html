@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+      <title>Scala - Mobile, distributed and anonymous.</title>
+      <meta name="description" content="Distributed wealth for all devices.">
+      <meta name="author" content="Scala development team">
+
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+
+      <link rel="stylesheet" href="css/reset.css">
+      <link rel="stylesheet" href="css/styles.css">
+      <link rel="stylesheet" href="css/colors.css">
+      <link href="css/fontawesome.css" rel="stylesheet">
+      <style>@import url('https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap');</style>
+
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+      <script src="js/scroll.js"></script>
+      <script src="js/sorttable.js"></script>
+
+      <!-- Twitter -->
+      <meta name="twitter:card" content="summary_large_image"/>
+      <meta name="twitter:site" content="@scalahq"/>
+      <meta name="twitter:title" content="Scala - Mobile, distributed and anonymous."/>
+      <meta name="twitter:description" content="Distributed wealth for all devices."/>
+      <meta name="twitter:image" content="https://scalaproject.io/assets/img/tcard.jpg"/>
+
+      <!-- Favicon -->
+      <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/assets/favicon/site.webmanifest">
+      <link rel="mask-icon" href="/assets/favicon/safari-pinned-tab.svg" color="#238bff">
+      <link rel="shortcut icon" href="/assets/favicon/favicon.ico">
+      <meta name="msapplication-TileColor" content="#ffffff">
+      <meta name="msapplication-config" content="/assets/favicon/browserconfig.xml">
+      <meta name="theme-color" content="#191e26">
+
+  </head>
+  <body>
+
+    <!-- Navigation -->
+    <div class="top-fix bg-grey full-width">
+      <div class="container">
+        <nav>
+          <div class="row">
+            <div class="no-lh">
+              <a href="https://explorer.scalaproject.io/"><img src="assets/img/logo.svg" height="32px" class="left"></a><h1 class="h5 c-white fat left spacer-top">Explorer</h1>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="row">
+        <div class="push-top">
+          <section>
+            <div class="search-bar">
+              <div class="input-field">
+                <input type="text" class="bg-black full-width" id="chain_data" placeholder="Height, Transaction or Block Hash...">
+              </div>
+              <div class="input-button">
+                <button class="button bg-blue"><i class="fas fa-search no-margin" onclick="goSearch();"></i></button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <div class="row small">
+       <div class="col">
+         <section>
+           <header>
+             <h5><i class="fas fa-search"></i> Your search result</h5>
+           </header>
+           <article>
+             <table class="overscroll-x small">
+               <thead>
+                 <tr>
+                   <th>Block Hash</th>
+                   <th>Block</th>
+                   <th>Reward</th>
+                   <th>Difficulty</th>
+                   <th>Time</th>
+                   <th>Stamp</th>
+                   <th class="t-right">TX</th>
+                 </tr>
+               </thead>
+               <tbody id="txBody2">
+                 <tr>
+                   <td class="c-white fat">{{block_hash}}</td>
+                   <td>{{block_height}}</td>
+                   <td>{{block_reward}}</td>
+                   <td>{{difficulty}}</td>
+                   <td>{{time_ago}}</td>
+                   <td>{{time_stamp}}</td>
+                   <td class="t-right">{{tx_count}}</td>
+                 </tr>
+               </tbody>
+             </table>
+           </article>
+           <article>
+             <table>
+               {{{inblock_txs}}}
+             </table>
+           </article>
+           </section>
+         </div>
+       </div>
+
+       <div class="row push-top small push-bottom-hard">
+         <section>
+           <header>
+             <h5><i class="far fa-chart-bar"></i> Network statistics</h5>
+           </header>
+           <div class="col x1-third">
+             <article>
+               <header>
+                 <h6>Network</h6>
+                 <hr>
+               </header>
+               <ul class="c-grey">
+                 <li>Block height&#58;<span class="right c-lighter">{{stat_block_height}}</span></li>
+                 <li>Difficulty&#58;<span class="right c-lighter">{{stat_block_difficulty}}</span></li>
+                 <li>Hashrate&#58;<span class="right c-lighter">{{stat_block_hashrate}}</span></li>
+               </ul>
+             </article>
+           </div>
+           <div class="col x1-third">
+             <article>
+               <header>
+                 <h6>Transactions</h6>
+                 <hr>
+               </header>
+               <ul class="c-grey">
+                 <li>Count&#58;<span class="right c-lighter">{{stat_txcount}}</span></li>
+                 <li>Pool size&#58;<span class="right c-lighter">{{stat_tx_pool_size}}</span></li>
+                 <li>Pool Size(in kb)&#58;<span class="right c-lighter">{{tx_pool_data_size}} kb</span></li>
+               </ul>
+             </article>
+           </div>
+           <div class="col x1-third">
+             <article>
+               <header>
+                 <h6>Connections</h6>
+                 <hr>
+               </header>
+               <ul class="c-grey">
+                 <li>Incoming connections&#58;<span class="right c-lighter">{{stat_incom}}</span></li>
+                 <li>Outgoing connections&#58;<span class="right c-lighter">{{stat_outgo}}</span></li>
+               </ul>
+             </article>
+           </div>
+         </section>
+       </div>
+     </div>
+    </div>
+
+
+    <!-- Downloads and links -->
+    <footer class="frame bg-black" id="footer">
+      <div class="container">
+        <div class="row">
+          <div class="col x1-fourth spacer-top">
+            <section>
+              <header>
+                <h5 class="c-black">Downloads</h5>
+              </header>
+              <ul>
+                <li><a href="https://github.com/scala-network/scala-electron-gui/releases" target="_blank">GUI Wallet</a></li>
+                <li><a href="https://github.com/scala-network/Scala/releases" target="_blank">CLI Wallet</a></li>
+                <li><a href="https://github.com/scala-network/XLArig/releases" target="_blank">CLI Miner</a></li>
+              </ul>
+            </section>
+          </div>
+          <div class="col x1-fourth spacer-top">
+            <section>
+              <header>
+                <h5 class="c-black">Essentials</h5>
+              </header>
+              <ul>
+                <li><a href="https://explorer.scalaproject.io/">Explorer</a></li>
+                <li><a href="https://scalaproject.io/paper-wallet.php">Paper Wallet</a></li>
+                <li><a href="https://scalaproject.io/pools.php">Mining Pools</a></li>
+              </ul>
+            </section>
+          </div>
+          <div class="col x1-fourth spacer-top">
+            <section>
+              <header>
+                <h5 class="c-black">Plugins</h5>
+              </header>
+              <ul>
+                <li><a href="https://github.com/scala-network/stellite-card-reader" target="_blank">Point of Sales</a></li>
+                <li><a href="https://github.com/scala-network/ScalaPay-Merchant-NPM" target="_blank">ScalaPay NPM</a></li>
+                <li><a href="https://github.com/scala-network/XTC-Stats" target="_blank">Monitoring Tool</a></li>
+              </ul>
+            </section>
+          </div>
+          <div class="col x1-fourth spacer-top">
+            <section>
+              <header>
+                <h5 class="c-black">Exchanges</h5>
+              </header>
+              <ul>
+                <li><a href="https://tradeogre.com/exchange/LTC-XLA" target="_blank">Tradeogre LTC</a></li>
+                <li><a href="https://tradeogre.com/exchange/BTC-XLA" target="_blank">Tradeogre BTC</a></li>
+                <li><a href="https://app.stex.com/en/trade/pair/BTC/XLA/" target="_blank">Stex</a></li>
+              </ul>
+            </section>
+          </div>
+        </div>
+        <div class="row spacer-top">
+          <section>
+            <header>
+              <h5 class="c-black fat">Join the community</h5>
+            </header>
+            <a href="https://medium.com/scala-network" target="_blank" class="button bg-grey mobi-full-width c-white"><i class="fab fa-medium"></i> Medium</a>
+            <a href="https://twitter.com/scalahq" target="_blank" class="button bg-grey mobi-full-width c-white"><i class="fab fa-twitter"></i> Twitter</a>
+            <a href="https://t.me/scalaNews" target="_blank" class="button bg-grey mobi-full-width c-white"><i class="fab fa-telegram"></i> Telegram</a>
+            <a href="https://discordapp.com/invite/djAFVvy" target="_blank" class="button bg-grey mobi-full-width c-white"><i class="fab fa-discord"></i> Discord</a>
+            <a href="https://github.com/scala-network/" target="_blank" class="button bg-green mobi-full-width right"><i class="fab fa-github"></i> Contribute on GitHub</a>
+          </section>
+        </div>
+      </div>
+    </footer>
+  </body>
+  <script src="js/miscellaneous.js"></script>
+</html>
