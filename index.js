@@ -5,6 +5,28 @@ const port = 1932
 const path = require('path')
 const bodyParser = require('body-parser')
 const mustacheExpress = require('mustache-express')
+const timeAgo = require("timeago.js");
+
+var locale = function(number, index, totalSec) {
+  return [
+    ['just now', 'just now'],
+    ['%s secs ago', '%s secs ago'],
+    ['1 min ago', '1 min ago'],
+    ['%s mins ago', '%s mins ago'],
+    ['1 hour ago', '1 hour ago'],
+    ['%s hours ago', '%s hours ago'],
+    ['1 day ago', '1 day ago'],
+    ['%s days ago', '%s days ago'],
+    ['1 week ago', '1 week ago'],
+    ['%s weeks ago', '%s weeks ago'],
+    ['1 month ago', '1 month ago'],
+    ['%s months ago', '%s months ago'],
+    ['1 year ago', '1 year ago'],
+    ['%s years ago', '%s years ago']
+  ][index];
+};
+
+timeAgo.register('pt_BR', locale);
 
 app.use(bodyParser.urlencoded({
   extended: true
@@ -45,6 +67,21 @@ async function getNetworkInfo () {
 
 async function getTransaction (txHash) {
   return await GET_EXPLORER_API(`/api/transaction/${txHash}`)
+}
+
+function countdown(s) {
+  const d = Math.floor(s / (3600 * 24));
+  s  -= d * 3600 * 24;
+  const h = Math.floor(s / 3600);
+  s  -= h * 3600;
+  const m = Math.floor(s / 60);
+  s  -= m * 60;
+  const tmp = [];
+  (d) && tmp.push(d + 'd');
+  (d || h) && tmp.push(h + 'h');
+  (d || h || m) && tmp.push(m + 'm');
+  tmp.push(s + 's');
+  return tmp.join(' ');
 }
 
 async function proveTransacion (txHash, address, key, method) {
@@ -97,6 +134,7 @@ app.post('/prove', async (req, res) => {
 })
 
 app.get('/', async (req, res) => {
+  const timeNow = new Date().getTime() / 1000;
   /* Network info */
   const networkInfo = await getNetworkInfo()
 
@@ -143,7 +181,7 @@ app.get('/', async (req, res) => {
   tenBlocksHeaders.forEach(header => {
     const headerLink = `/block?block_info=${header.hash}`
     tenBlocksHTML += `<tr><td><a href="${headerLink}">${header.hash.substring(0, 5)}...${header.hash.substring(header.hash.length - 5)}</a></td><td>${header.height}</td><td>${(((header.reward) / 100) * (75/100)).toFixed(2)}</td><td>${(((header.reward) / 100) * (25/100)).toFixed(2)}</td>
-        <td>${(header.difficulty)}</td><td>${(header.timestamp)}</td><td class='t-right'>${(header.num_txes)}</td></tr>`
+        <td>${(header.difficulty)}</td><td>${timeAgo.format(header.timestamp * 1000, 'pt_BR')}</td><td class='t-right'>${(header.num_txes)}</td></tr>`
   })
   tenBlocksHTML += '</tbody>'
 
@@ -162,7 +200,7 @@ app.get('/', async (req, res) => {
       last_block_reward: ((((lastBlockInfo.result.block_header.reward) / 100)) * (75/100)).toFixed(2),
       last_block_reward_ldpow: (((lastBlockInfo.result.block_header.reward) / 100) * (25/100)).toFixed(2),
       last_block_difficulty: lastBlockInfo.result.block_header.difficulty,
-      last_block_when: lastBlockInfo.result.block_header.timestamp,
+      last_block_when: timeAgo.format(lastBlockInfo.result.block_header.timestamp * 1000, 'pt_BR'),
       last_block_txs_count: transactionsCount,
       prev_blocks_html: tenBlocksHTML,
       last_blocks_transactions: transactionsHTML
@@ -240,6 +278,7 @@ app.get('/search', async (req, res) => {
 })
 
 app.get('/block', async (req, res) => {
+  const timeNow = (new Date().getTime()/1000);
   const gotBlockInfo = req.query.block_info
   const blockInfo = await getBlock(gotBlockInfo)
   const lastBlockTxHashes = blockInfo.result.tx_hashes
@@ -279,7 +318,7 @@ app.get('/block', async (req, res) => {
       block_height: blockInfo.result.block_header.height,
       block_reward: ((blockInfo.result.block_header.reward) / 100),
       difficulty: blockInfo.result.block_header.difficulty,
-      time_ago: blockInfo.result.block_header.timestamp,
+      time_ago: timeAgo.format(blockInfo.result.block_header.timestamp * 1000, 'pt_BR'),
       time_stamp: blockInfo.result.block_header.timestamp,
       tx_count: transactionsCount,
       inblock_txs: blockTxsHTML,

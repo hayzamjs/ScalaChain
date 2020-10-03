@@ -1,4 +1,4 @@
 module.exports = {
-  EXPLORER_API: 'http://127.0.0.1:8081',
-  NODE_ADDRESS: 'http://127.0.0.1:11812'
+  EXPLORER_API: 'http://164.68.117.160:8081',
+  NODE_ADDRESS: 'http://mine.scalaproject.io:8000'
 }
