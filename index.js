@@ -88,7 +88,7 @@ app.get('/prove', async (req, res) => {
 })
 
 app.post('/prove', async (req, res) => {
-  const proof = await proveTransacion(req.body.tx_hash, req.body.key, req.body.address, req.body.method)
+  const proof = await proveTransacion(req.body.tx_hash, req.body.address, req.body.key, req.body.method)
   if (proof === true) {
     res.send(true)
   } else {
@@ -142,7 +142,7 @@ app.get('/', async (req, res) => {
   let tenBlocksHTML = '<tbody id=\'txBody2\'>'
   tenBlocksHeaders.forEach(header => {
     const headerLink = `/block?block_info=${header.hash}`
-    tenBlocksHTML += `<tr><td><a href="${headerLink}">${header.hash.substring(0, 5)}...${header.hash.substring(header.hash.length - 5)}</a></td><td>${header.height}</td><td>${(header.reward) / 100}</td>
+    tenBlocksHTML += `<tr><td><a href="${headerLink}">${header.hash.substring(0, 5)}...${header.hash.substring(header.hash.length - 5)}</a></td><td>${header.height}</td><td>${(((header.reward) / 100) * (75/100)).toFixed(2)}</td><td>${(((header.reward) / 100) * (25/100)).toFixed(2)}</td>
         <td>${(header.difficulty)}</td><td>${(header.timestamp)}</td><td class='t-right'>${(header.num_txes)}</td></tr>`
   })
   tenBlocksHTML += '</tbody>'
@@ -159,7 +159,8 @@ app.get('/', async (req, res) => {
       outgoing_conn_count: networkInfo.data.outgoing_connections_count,
       last_hash_top: lastBlockInfo.result.block_header.hash,
       last_block_height_top: lastBlockInfo.result.block_header.height,
-      last_block_reward: ((lastBlockInfo.result.block_header.reward) / 100),
+      last_block_reward: ((((lastBlockInfo.result.block_header.reward) / 100)) * (75/100)).toFixed(2),
+      last_block_reward_ldpow: (((lastBlockInfo.result.block_header.reward) / 100) * (25/100)).toFixed(2),
       last_block_difficulty: lastBlockInfo.result.block_header.difficulty,
       last_block_when: lastBlockInfo.result.block_header.timestamp,
       last_block_txs_count: transactionsCount,
